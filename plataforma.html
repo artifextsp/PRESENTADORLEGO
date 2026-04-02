@@ -236,7 +236,6 @@
             <div class="section-title">Proyecto</div>
             <div class="form-group"><label class="form-label">Nombre</label><input type="text" class="form-input" id="project-name" value="Mi Robot FLL"></div>
             <div class="form-group"><label class="form-label">URL base Cloudinary</label><input type="text" class="form-input" id="cloudinary-base" placeholder="https://res.cloudinary.com/..."></div>
-            <div class="form-group"><label class="form-label">URL del modelo (para compartir)</label><input type="text" class="form-input" id="model-url" placeholder="https://...robot.glb"></div>
           </div>
         </div>
 
@@ -673,18 +672,18 @@
     function saveCurrentProject(){
       const name=$('#project-name').value.trim()||'Sin nombre';
       const projects=getProjects();const existing=projects.findIndex(p=>p.name===name);
-      const proj={name,cloudinaryBase:$('#cloudinary-base').value,modelUrl:$('#model-url').value,components,labels,groups,savedAt:new Date().toISOString()};
+      const proj={name,cloudinaryBase:$('#cloudinary-base').value,modelUrl:'assets/robot.glb',components,labels,groups,savedAt:new Date().toISOString()};
       if(existing>=0)projects[existing]=proj;else projects.push(proj);
       saveProjects(projects);renderProjectsGrid();alert(`Proyecto "${name}" guardado`);
     }
     function exportProject(){
-      const proj={version:3,name:$('#project-name').value,cloudinaryBase:$('#cloudinary-base').value,modelUrl:$('#model-url').value,components,labels,groups};
+      const proj={version:3,name:$('#project-name').value,cloudinaryBase:$('#cloudinary-base').value,modelUrl:'assets/robot.glb',components,labels,groups};
       const blob=new Blob([JSON.stringify(proj,null,2)],{type:'application/json'});
       const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=(proj.name||'proyecto').replace(/\s+/g,'-').toLowerCase()+'.json';a.click();
     }
     function loadProjectData(proj){
       $('#project-name').value=proj.name||'';$('#topbar-name').textContent=proj.name||'AURORA 3D';
-      $('#cloudinary-base').value=proj.cloudinaryBase||'';$('#model-url').value=proj.modelUrl||'';
+      $('#cloudinary-base').value=proj.cloudinaryBase||'';
       components=proj.components||[];labels=proj.labels||[];groups=proj.groups||[];
       components.forEach(c=>{if(c.visible===undefined)c.visible=true});
       labels.forEach(l=>{if(l.visible===undefined)l.visible=true});
