@@ -375,7 +375,7 @@
     const $=s=>document.querySelector(s),$$=s=>document.querySelectorAll(s);
 
     // ─── State ───
-    let model=null, loadedFiles={}, placingMode=null, editingIdx=-1, editingType='';
+    let model=null, loadedFiles={}, placingMode=null, editingIdx=-1, editingType='', currentModelFile='';
     let components=[], labels=[], groups=[];
     let overlayEls=[], overlayPos=[], overlayItems=[], overlayMeshMap=[];
     let explodeParts=[], explodeAmount=0, explodeActive=false, explodeGroup='';
@@ -426,7 +426,9 @@
         scene.add(model);centerAndScale(model);setupExplode();
         $('#welcome').classList.add('hidden');
         let mc=0,vc=0;model.traverse(c=>{if(c.isMesh){mc++;if(c.geometry?.attributes?.position)vc+=c.geometry.attributes.position.count}});
-        const nm=(objF||glbF||daeF).name+(mtlF?' + colores':'');
+        const mainFile=(objF||glbF||daeF).name;
+        currentModelFile='assets/'+mainFile.replace(/\.(obj|dae)$/i,'.glb');
+        const nm=mainFile+(mtlF?' + colores':'');
         $('#model-status').innerHTML=`<div class="model-loaded"><div class="dot"></div><div><div class="info">${nm}</div><div class="detail">${mc} partes · ${(vc/1000).toFixed(0)}K vértices</div></div></div>`;
         rebuildOverlays();
       }catch(e){alert('Error: '+e.message);console.error(e)}
@@ -672,12 +674,12 @@
     function saveCurrentProject(){
       const name=$('#project-name').value.trim()||'Sin nombre';
       const projects=getProjects();const existing=projects.findIndex(p=>p.name===name);
-      const proj={name,cloudinaryBase:$('#cloudinary-base').value,modelUrl:'assets/robot.glb',components,labels,groups,savedAt:new Date().toISOString()};
+      const proj={name,cloudinaryBase:$('#cloudinary-base').value,modelUrl:currentModelFile,components,labels,groups,savedAt:new Date().toISOString()};
       if(existing>=0)projects[existing]=proj;else projects.push(proj);
       saveProjects(projects);renderProjectsGrid();alert(`Proyecto "${name}" guardado`);
     }
     function exportProject(){
-      const proj={version:3,name:$('#project-name').value,cloudinaryBase:$('#cloudinary-base').value,modelUrl:'assets/robot.glb',components,labels,groups};
+      const proj={version:3,name:$('#project-name').value,cloudinaryBase:$('#cloudinary-base').value,modelUrl:currentModelFile,components,labels,groups};
       const blob=new Blob([JSON.stringify(proj,null,2)],{type:'application/json'});
       const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=(proj.name||'proyecto').replace(/\s+/g,'-').toLowerCase()+'.json';a.click();
     }
