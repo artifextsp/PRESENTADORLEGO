@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>AURORA 3D — Visor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+    :root{
+      --bg:#06080f;--bg-card:#0e1322;--bg-modal:#131a2e;--bg-input:#182040;
+      --accent:#3b82f6;--cyan:#06b6d4;--aurora1:#3b82f6;--aurora2:#06b6d4;--aurora3:#a855f7;
+      --hotspot:#f59e0b;--hotspot-glow:rgba(245,158,11,.4);
+      --label-color:#06b6d4;--label-glow:rgba(6,182,212,.4);
+      --text:#f1f5f9;--text-dim:#94a3b8;--danger:#ef4444;--success:#22c55e;
+      --radius:12px;--panel-w:280px
+    }
+    html,body{height:100%;width:100%;overflow:hidden;font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);-webkit-tap-highlight-color:transparent}
+    #app{display:flex;height:100dvh;width:100%}
+    button{font-family:inherit}
+
+    /* ═══ PANEL ═══ */
+    #panel{width:var(--panel-w);min-width:var(--panel-w);background:var(--bg-card);border-right:1px solid rgba(255,255,255,.06);display:flex;flex-direction:column;overflow:hidden;z-index:20;transition:margin-left .3s}
+    #panel.collapsed{margin-left:calc(var(--panel-w)*-1)}
+    .panel-header{padding:.7rem 1rem;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.06)}
+    .panel-brand{font-size:.85rem;font-weight:900;letter-spacing:.04em;background:linear-gradient(135deg,var(--aurora1),var(--aurora2),var(--aurora3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .panel-sub{font-size:.55rem;color:var(--text-dim);font-weight:600;letter-spacing:.02em}
+    .panel-close{width:28px;height:28px;border-radius:8px;border:none;background:rgba(255,255,255,.06);color:var(--text-dim);font-size:.9rem;cursor:pointer;display:flex;align-items:center;justify-content:center}
+    .panel-body{flex:1;overflow-y:auto;padding:.8rem;scrollbar-width:thin}
+    .panel-body::-webkit-scrollbar{width:4px}
+    .panel-body::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:2px}
+    .section{margin-bottom:1rem}
+    .section-title{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text-dim);margin-bottom:.5rem}
+
+    .group-card{border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);margin-bottom:.5rem;overflow:hidden}
+    .group-header{display:flex;align-items:center;gap:.4rem;padding:.45rem .6rem;background:rgba(255,255,255,.03);cursor:pointer}
+    .group-header .g-check{width:15px;height:15px;accent-color:var(--aurora3);cursor:pointer}
+    .group-header .g-name{flex:1;font-size:.75rem;font-weight:700}
+    .group-header .g-count{font-size:.6rem;color:var(--text-dim)}
+    .group-items{padding:.25rem .5rem .4rem}
+    .gi-row{display:flex;align-items:center;gap:.4rem;padding:.2rem 0;font-size:.7rem}
+    .gi-row .gi-check{width:14px;height:14px;accent-color:var(--accent);cursor:pointer}
+    .gi-row .gi-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+    .gi-row .gi-dot.comp{background:var(--hotspot)}
+    .gi-row .gi-dot.lbl{background:var(--label-color)}
+    .gi-row .gi-name{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+    .ungrouped-section{margin-top:.6rem}
+
+    .load-area{text-align:center;padding:1.5rem .5rem}
+    .load-area p{font-size:.75rem;color:var(--text-dim);margin-bottom:.6rem}
+    .load-btn{display:inline-flex;align-items:center;gap:.3rem;padding:.5rem 1rem;border-radius:var(--radius);border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:var(--text-dim);font-size:.75rem;font-weight:600;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+    .load-btn:hover{background:rgba(255,255,255,.08);color:var(--text)}
+    .load-btn input[type="file"]{position:absolute;inset:0;opacity:0;cursor:pointer}
+
+    /* ═══ MAIN ═══ */
+    #main-area{flex:1;display:flex;flex-direction:column;position:relative;overflow:hidden}
+    .topbar{display:flex;align-items:center;justify-content:space-between;padding:.4rem .8rem;background:var(--bg-card);border-bottom:1px solid rgba(255,255,255,.06);flex-shrink:0;z-index:10}
+    .topbar-left{display:flex;align-items:center;gap:.5rem}
+    .toggle-btn{width:30px;height:30px;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:var(--text-dim);font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center}
+    .proj-name{font-weight:700;font-size:.85rem}
+    .viewer-badge{padding:.15rem .5rem;border-radius:50px;font-size:.6rem;font-weight:700;background:rgba(168,85,247,.15);border:1px solid rgba(168,85,247,.3);color:var(--aurora3)}
+
+    #scene-container{flex:1;position:relative;overflow:hidden}
+    #canvas{width:100%;height:100%;display:block;touch-action:none}
+    #hotspot-layer{position:absolute;inset:0;pointer-events:none;z-index:5;overflow:hidden}
+    .loading-overlay{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;background:rgba(6,8,15,.85);z-index:4}
+    .loading-overlay.visible{display:flex}
+    .load-spinner{width:44px;height:44px;border:3px solid rgba(255,255,255,.1);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .load-text{margin-top:.8rem;font-size:.85rem;color:var(--text-dim)}
+
+    .welcome-screen{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:3;text-align:center;padding:2rem}
+    .welcome-screen.hidden{display:none}
+    .welcome-screen img{max-width:180px;opacity:.3;margin-bottom:1rem}
+    .welcome-screen p{font-size:.82rem;color:var(--text-dim);max-width:300px}
+    .welcome-screen .load-btn{margin-top:.8rem}
+
+    /* ═══ 3D OVERLAYS ═══ */
+    .hs-3d{position:absolute;transform:translate(-50%,-50%);display:flex;align-items:center;gap:.3rem;pointer-events:auto;cursor:pointer;border:none;background:none;padding:0;transition:opacity .3s;z-index:6}
+    .hs-3d.behind{opacity:0;pointer-events:none}
+    .hs-3d.hidden-item{display:none!important}
+    .hs-3d .dot{border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Inter',sans-serif;font-weight:800;color:#111;flex-shrink:0}
+    .hs-3d .dot.comp-dot{width:32px;height:32px;font-size:.75rem;background:var(--hotspot);box-shadow:0 0 0 0 var(--hotspot-glow);animation:pulse3d 2.5s ease-in-out infinite}
+    .hs-3d .dot.label-dot{width:12px;height:12px;font-size:0;background:var(--label-color);box-shadow:0 0 0 0 var(--label-glow);animation:pulseLabel 2.5s ease-in-out infinite}
+    .hs-3d .tag{background:var(--bg-card);border:1px solid rgba(255,255,255,.12);padding:.15rem .45rem;border-radius:6px;font-family:'Inter',sans-serif;font-size:.65rem;font-weight:600;color:var(--text);white-space:nowrap;box-shadow:0 4px 12px rgba(0,0,0,.4)}
+    @keyframes pulse3d{0%{box-shadow:0 0 0 0 var(--hotspot-glow)}50%{box-shadow:0 0 0 10px rgba(245,158,11,0)}100%{box-shadow:0 0 0 0 rgba(245,158,11,0)}}
+    @keyframes pulseLabel{0%{box-shadow:0 0 0 0 var(--label-glow)}50%{box-shadow:0 0 0 8px rgba(6,182,212,0)}100%{box-shadow:0 0 0 0 rgba(6,182,212,0)}}
+
+    #desc-popup{position:fixed;z-index:60;background:var(--bg-modal);border:1px solid rgba(6,182,212,.3);border-radius:12px;padding:.7rem .9rem;max-width:260px;min-width:140px;display:none;box-shadow:0 8px 30px rgba(0,0,0,.6),0 0 15px rgba(6,182,212,.1)}
+    #desc-popup.show{display:block}
+    #desc-popup .dp-title{font-size:.78rem;font-weight:700;margin-bottom:.25rem;color:var(--label-color)}
+    #desc-popup .dp-text{font-size:.72rem;color:var(--text-dim);line-height:1.45}
+    #desc-popup .dp-close{position:absolute;top:5px;right:7px;width:18px;height:18px;border:none;background:none;color:var(--text-dim);font-size:.8rem;cursor:pointer;display:flex;align-items:center;justify-content:center}
+
+    #explode-panel{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);display:none;align-items:center;gap:.5rem;background:var(--bg-card);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:.4rem .7rem;z-index:8;box-shadow:0 8px 30px rgba(0,0,0,.5);flex-wrap:wrap;justify-content:center}
+    #explode-panel.visible{display:flex}
+    #explode-panel label{font-size:.68rem;font-weight:600;color:var(--text-dim);white-space:nowrap}
+    #explode-slider{width:110px;height:5px;-webkit-appearance:none;background:rgba(255,255,255,.1);border-radius:3px;outline:none;cursor:pointer}
+    #explode-slider::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;background:var(--accent);border-radius:50%;border:2px solid var(--bg-card);cursor:grab}
+    #explode-pct{font-size:.68rem;font-weight:700;color:var(--accent);min-width:26px;text-align:right}
+    .explode-btn{padding:.3rem .6rem;border-radius:50px;border:1px solid rgba(59,130,246,.3);background:rgba(59,130,246,.15);color:var(--accent);font-size:.65rem;font-weight:700;font-family:inherit;cursor:pointer;white-space:nowrap}
+    .explode-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+    #explode-group-sel{padding:.25rem .4rem;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:var(--bg-input);color:var(--text);font-family:inherit;font-size:.65rem;max-width:110px}
+
+    /* ═══ VIDEO MODAL ═══ */
+    #modal-overlay{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.75);backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;opacity:0;visibility:hidden;transition:opacity .35s,visibility .35s}
+    #modal-overlay.open{opacity:1;visibility:visible}
+    .modal-card{width:min(92vw,650px);max-height:90dvh;background:var(--bg-modal);border-radius:16px;border:1px solid rgba(255,255,255,.08);overflow:hidden;transform:translateY(30px) scale(.95);transition:transform .4s cubic-bezier(.16,1,.3,1);display:flex;flex-direction:column}
+    #modal-overlay.open .modal-card{transform:translateY(0) scale(1)}
+    .modal-header{display:flex;align-items:center;justify-content:space-between;padding:.8rem 1rem;border-bottom:1px solid rgba(255,255,255,.06)}
+    .modal-header-left{display:flex;align-items:center;gap:.5rem}
+    .modal-number{width:28px;height:28px;border-radius:50%;background:var(--hotspot);color:#111;font-weight:800;font-size:.8rem;display:flex;align-items:center;justify-content:center}
+    .modal-title{font-size:.95rem;font-weight:700}
+    .modal-close{width:32px;height:32px;border-radius:50%;border:none;background:rgba(255,255,255,.08);color:var(--text-dim);font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center}
+    .modal-video-wrapper{position:relative;background:#000;aspect-ratio:16/9;width:100%}
+    .modal-video-wrapper video{width:100%;height:100%;object-fit:contain;display:block}
+    .video-loading{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(0,0,0,.6);transition:opacity .3s}
+    .video-loading.hidden{opacity:0;pointer-events:none}
+    .video-loading .spinner{width:32px;height:32px;border:3px solid rgba(255,255,255,.15);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite}
+    .video-error{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;background:rgba(0,0,0,.8);color:var(--danger);font-size:.78rem;text-align:center}
+    .video-error.show{display:flex}
+    .modal-body{padding:.7rem 1rem 1rem;overflow-y:auto}
+    .modal-description{color:var(--text-dim);font-size:.82rem;line-height:1.5}
+
+    @media(max-width:768px){#panel{position:fixed;left:0;top:0;bottom:0;z-index:30}}
+  </style>
+</head>
+<body>
+  <div id="app">
+    <aside id="panel">
+      <div class="panel-header">
+        <div><span class="panel-brand">AURORA 3D</span><br><span class="panel-sub">VISOR INTERACTIVO</span></div>
+        <button class="panel-close" id="close-panel">✕</button>
+      </div>
+      <div class="panel-body">
+        <div class="section" id="groups-section"></div>
+        <div class="section" id="ungrouped-section"></div>
+        <div id="load-model-area" class="load-area">
+          <p>Cargar modelo 3D</p>
+          <label class="load-btn">📦 Seleccionar archivos
+            <input type="file" id="file-input" accept=".obj,.glb,.gltf,.dae,.mtl" multiple>
+          </label>
+        </div>
+      </div>
+    </aside>
+
+    <div id="main-area">
+      <div class="topbar">
+        <div class="topbar-left">
+          <button class="toggle-btn" id="open-panel">☰</button>
+          <span class="proj-name" id="proj-name">AURORA 3D</span>
+        </div>
+        <span class="viewer-badge">VISOR</span>
+      </div>
+      <div id="scene-container">
+        <canvas id="canvas"></canvas>
+        <div id="hotspot-layer"></div>
+        <div id="explode-panel">
+          <button class="explode-btn" id="explode-toggle">Despiece</button>
+          <select id="explode-group-sel"><option value="">Todos</option></select>
+          <label>Separación</label>
+          <input type="range" id="explode-slider" min="0" max="100" value="0">
+          <span id="explode-pct">0%</span>
+        </div>
+        <div class="loading-overlay" id="loading-3d"><div class="load-spinner"></div><span class="load-text" id="load-text">Cargando...</span></div>
+        <div class="welcome-screen" id="welcome">
+          <img src="assets/aurora-logo.png" alt="AURORA 3D">
+          <p>Cargando proyecto...</p>
+          <label class="load-btn" style="margin-top:1rem">📦 Cargar modelo manualmente
+            <input type="file" id="file-input-welcome" accept=".obj,.glb,.gltf,.dae,.mtl" multiple>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <div id="desc-popup"><button class="dp-close">×</button><div class="dp-title"></div><div class="dp-text"></div></div>
+
+    <div id="modal-overlay">
+      <div class="modal-card">
+        <div class="modal-header"><div class="modal-header-left"><span class="modal-number" id="modal-num"></span><span class="modal-title" id="modal-title"></span></div><button class="modal-close" id="modal-close">×</button></div>
+        <div class="modal-video-wrapper"><video id="modal-video" playsinline controls preload="none"></video><div class="video-loading" id="video-loading"><div class="spinner"></div><span>Cargando video...</span></div><div class="video-error" id="video-error"><span>No se pudo cargar el video.</span></div></div>
+        <div class="modal-body"><p class="modal-description" id="modal-desc"></p></div>
+      </div>
+    </div>
+  </div>
+
+  <script type="importmap">
+  {"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.162.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.162.0/examples/jsm/"}}
+  </script>
+  <script type="module">
+    import * as THREE from 'three';
+    import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
+    import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
+    import {OBJLoader} from 'three/addons/loaders/OBJLoader.js';
+    import {MTLLoader} from 'three/addons/loaders/MTLLoader.js';
+    import {ColladaLoader} from 'three/addons/loaders/ColladaLoader.js';
+
+    const $=s=>document.querySelector(s),$$=s=>document.querySelectorAll(s);
+
+    let model=null, loadedFiles={};
+    let components=[], labels=[], groups=[], cloudinaryBase='';
+    let overlayEls=[], overlayPos=[], overlayItems=[], overlayMeshMap=[];
+    let explodeParts=[], explodeAmount=0, explodeActive=false, explodeGroup='';
+
+    const container=$('#scene-container'), canvas=$('#canvas');
+    const scene=new THREE.Scene();
+    const camera=new THREE.PerspectiveCamera(45,1,0.01,1000);
+    camera.position.set(0,0.4,1.2);
+    const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+    renderer.toneMapping=THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure=1.5;
+    renderer.outputColorSpace=THREE.SRGBColorSpace;
+    scene.add(new THREE.AmbientLight(0xffffff,0.8));
+    const d1=new THREE.DirectionalLight(0xffffff,1.2);d1.position.set(5,10,7);scene.add(d1);
+    const d2=new THREE.DirectionalLight(0xffffff,0.4);d2.position.set(-5,5,-5);scene.add(d2);
+    scene.add(new THREE.HemisphereLight(0x87CEEB,0x444444,0.5));
+    const controls=new OrbitControls(camera,renderer.domElement);
+    controls.enableDamping=true;controls.dampingFactor=0.08;
+
+    function onResize(){const w=container.clientWidth,h=container.clientHeight;camera.aspect=w/h;camera.updateProjectionMatrix();renderer.setSize(w,h)}
+    window.addEventListener('resize',onResize);new ResizeObserver(onResize).observe(container);onResize();
+    (function anim(){requestAnimationFrame(anim);controls.update();renderer.render(scene,camera);updateOverlayPositions()})();
+
+    function parseVec3(s){const p=s.trim().split(/\s+/).map(Number);return new THREE.Vector3(p[0],p[1],p[2])}
+
+    function clearModel(){if(model){scene.remove(model);model=null}explodeParts=[];overlayMeshMap=[];$('#explode-panel').classList.remove('visible')}
+    function centerAndScale(o){const b=new THREE.Box3().setFromObject(o),c=b.getCenter(new THREE.Vector3()),sz=b.getSize(new THREE.Vector3()),m=Math.max(sz.x,sz.y,sz.z);if(!m)return;const s=0.6/m;o.position.sub(c.multiplyScalar(s));o.scale.multiplyScalar(s);const nb=new THREE.Box3().setFromObject(o),nc=nb.getCenter(new THREE.Vector3());controls.target.copy(nc);camera.position.set(nc.x,nc.y+0.36,nc.z+1.08)}
+
+    async function loadFromFiles(files){
+      for(const f of files)loadedFiles[f.name.toLowerCase()]=f;
+      const all=Object.values(loadedFiles);
+      const objF=all.find(f=>f.name.toLowerCase().endsWith('.obj'));
+      const mtlF=all.find(f=>f.name.toLowerCase().endsWith('.mtl'));
+      const glbF=all.find(f=>f.name.toLowerCase().endsWith('.glb')||f.name.toLowerCase().endsWith('.gltf'));
+      const daeF=all.find(f=>f.name.toLowerCase().endsWith('.dae'));
+      if(files.length===1&&files[0].name.toLowerCase().endsWith('.mtl')&&!objF)return;
+      if(!objF&&!glbF&&!daeF)return;
+      showLoading('Cargando modelo 3D...');
+      try{
+        clearModel();
+        if(glbF)model=await loadGLB(glbF);
+        else if(objF)model=await loadOBJ(objF,mtlF);
+        else if(daeF)model=await loadDAE(daeF);
+        scene.add(model);centerAndScale(model);setupExplode();
+        $('#welcome').classList.add('hidden');
+        $('#load-model-area').innerHTML='<p style="font-size:.72rem;color:var(--success)">✓ Modelo cargado</p>';
+        rebuildOverlays();
+      }catch(e){console.error(e)}
+      hideLoading();
+    }
+    async function loadFromUrl(url){
+      showLoading('Descargando modelo 3D...');
+      try{
+        clearModel();
+        const loader=new GLTFLoader();
+        const gltf=await new Promise((res,rej)=>loader.load(url,res,null,rej));
+        model=gltf.scene;scene.add(model);centerAndScale(model);setupExplode();
+        $('#welcome').classList.add('hidden');
+        $('#load-model-area').innerHTML='<p style="font-size:.72rem;color:var(--success)">✓ Modelo cargado</p>';
+        rebuildOverlays();
+      }catch(e){console.error('Error cargando modelo desde URL:',e);$('#welcome').querySelector('p').textContent='No se pudo cargar el modelo automáticamente. Carga los archivos manualmente.'}
+      hideLoading();
+    }
+    function showLoading(t){$('#load-text').textContent=t;$('#loading-3d').classList.add('visible')}
+    function hideLoading(){$('#loading-3d').classList.remove('visible')}
+
+    function loadGLB(f){return new Promise((res,rej)=>{const u=URL.createObjectURL(f);new GLTFLoader().load(u,g=>{URL.revokeObjectURL(u);res(g.scene)},null,e=>{URL.revokeObjectURL(u);rej(e)})})}
+    function loadOBJ(of,mf){return new Promise(async(res,rej)=>{try{let mat=null;if(mf){mat=new MTLLoader().parse(await mf.text(),'');mat.preload()}const ol=new OBJLoader();if(mat)ol.setMaterials(mat);res(ol.parse(await of.text()))}catch(e){rej(e)}})}
+    function loadDAE(f){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>{const t=r.result.replace(/<RoundingEdgeNormal:enable>[^<]*<\/RoundingEdgeNormal:enable>/g,'');const u=URL.createObjectURL(new Blob([t],{type:'application/xml'}));new ColladaLoader().load(u,c=>{URL.revokeObjectURL(u);res(c.scene)},null,e=>{URL.revokeObjectURL(u);rej(e)})};r.readAsText(f)})}
+
+    // ─── Explode ───
+    function setupExplode(){
+      if(!model)return;let meshes=[];model.traverse(c=>{if(c.isMesh)meshes.push(c)});
+      if(meshes.length===1&&meshes[0].geometry?.groups?.length>1){
+        const src=meshes[0],g=src.geometry.groups,sg=src.geometry,par=src.parent||model,pos=sg.attributes.position,norm=sg.attributes.normal,idx=sg.index;meshes=[];
+        g.forEach(gr=>{const ids=[];for(let i=gr.start;i<gr.start+gr.count;i++)ids.push(idx?idx.getX(i):i);
+        const uq=[...new Set(ids)],m2n=new Map();uq.forEach((o,n)=>m2n.set(o,n));
+        const np=new Float32Array(uq.length*3),nn=norm?new Float32Array(uq.length*3):null;
+        uq.forEach((o,n)=>{np[n*3]=pos.getX(o);np[n*3+1]=pos.getY(o);np[n*3+2]=pos.getZ(o);if(norm){nn[n*3]=norm.getX(o);nn[n*3+1]=norm.getY(o);nn[n*3+2]=norm.getZ(o)}});
+        const ng=new THREE.BufferGeometry();ng.setAttribute('position',new THREE.Float32BufferAttribute(np,3));if(nn)ng.setAttribute('normal',new THREE.Float32BufferAttribute(nn,3));ng.setIndex(ids.map(i=>m2n.get(i)));
+        const mt=Array.isArray(src.material)?src.material[gr.materialIndex]:src.material.clone();
+        const nm=new THREE.Mesh(ng,mt);nm.position.copy(src.position);nm.rotation.copy(src.rotation);nm.scale.copy(src.scale);par.add(nm);meshes.push(nm)});par.remove(src);
+      }
+      if(meshes.length<2)return;
+      const ob=new THREE.Box3();meshes.forEach(m=>{m.geometry.computeBoundingBox();if(m.geometry.boundingBox)ob.union(m.geometry.boundingBox)});
+      const oc=ob.getCenter(new THREE.Vector3()),os=ob.getSize(new THREE.Vector3()),md=Math.max(os.x,os.y,os.z);
+      explodeParts=meshes.map(mesh=>{mesh.geometry.computeBoundingBox();const mc=mesh.geometry.boundingBox.getCenter(new THREE.Vector3()),dir=new THREE.Vector3().subVectors(mc,oc);if(dir.length()<md*0.01)dir.set(Math.random()-0.5,Math.random()-0.5,Math.random()-0.5);dir.normalize();return{mesh,originalPos:mesh.position.clone(),direction:dir,distance:md*0.4}});
+      $('#explode-panel').classList.add('visible');
+      updateExplodeGroupSelect();mapOverlaysToMeshes();
+    }
+    function getActivePartIndices(){
+      if(!explodeGroup)return new Set(explodeParts.map((_,i)=>i));
+      const indices=new Set();
+      overlayItems.forEach((oi,i)=>{if(oi.item.group===explodeGroup&&overlayMeshMap[i]>=0)indices.add(overlayMeshMap[i])});
+      return indices;
+    }
+    function applyExplode(){
+      if(!explodeParts.length)return;const active=getActivePartIndices();
+      explodeParts.forEach(({mesh,originalPos,direction,distance},i)=>{if(active.has(i))mesh.position.copy(originalPos).addScaledVector(direction,distance*explodeAmount);else mesh.position.copy(originalPos)});
+    }
+    function animateExplodeTo(t){
+      const sl=$('#explode-slider'),st=parseInt(sl.value),t0=performance.now();
+      (function step(now){const p=Math.min((now-t0)/600,1),e=p<0.5?4*p*p*p:1-Math.pow(-2*p+2,3)/2,c=Math.round(st+(t-st)*e);sl.value=c;$('#explode-pct').textContent=c+'%';explodeAmount=c/100;applyExplode();$('#explode-toggle').classList.toggle('active',c>0);if(p<1)requestAnimationFrame(step)})(performance.now());
+    }
+    function updateExplodeGroupSelect(){
+      const sel=$('#explode-group-sel'),cur=sel.value;
+      sel.innerHTML='<option value="">Todos</option>';
+      groups.forEach(g=>{const o=document.createElement('option');o.value=g.id;o.textContent=g.nombre;sel.appendChild(o)});
+      sel.value=cur;
+    }
+
+    function mapOverlaysToMeshes(){
+      overlayMeshMap=[];
+      if(!explodeParts.length||!overlayPos.length){overlayPos.forEach(()=>overlayMeshMap.push(-1));return}
+      const saved=explodeParts.map(p=>p.mesh.position.clone());
+      explodeParts.forEach(p=>p.mesh.position.copy(p.originalPos));
+      if(model)model.updateMatrixWorld(true);
+      overlayPos.forEach(wp=>{
+        let minD=Infinity,best=-1;
+        explodeParts.forEach((part,pi)=>{const c=new THREE.Vector3();part.mesh.geometry.computeBoundingBox();part.mesh.geometry.boundingBox.getCenter(c);part.mesh.localToWorld(c);const d=wp.distanceTo(c);if(d<minD){minD=d;best=pi}});
+        overlayMeshMap.push(best);
+      });
+      explodeParts.forEach((p,i)=>p.mesh.position.copy(saved[i]));
+      if(model)model.updateMatrixWorld(true);
+    }
+
+    // ─── Overlays ───
+    function rebuildOverlays(){
+      const layer=$('#hotspot-layer');layer.innerHTML='';overlayEls=[];overlayPos=[];overlayItems=[];
+      const allItems=[...components.map((c,i)=>({item:c,type:'comp',idx:i})),...labels.map((l,i)=>({item:l,type:'label',idx:i}))];
+      allItems.forEach(oi=>{
+        const pos=parseVec3(oi.item.posicion);overlayPos.push(pos);overlayItems.push(oi);
+        const btn=document.createElement('button');btn.className='hs-3d';
+        if(!oi.item.visible)btn.classList.add('hidden-item');
+        const isComp=oi.type==='comp';
+        if(isComp)btn.innerHTML=`<span class="dot comp-dot">${oi.idx+1}</span><span class="tag">${oi.item.nombre}</span>`;
+        else btn.innerHTML=`<span class="dot label-dot"></span><span class="tag">${oi.item.nombre}</span>`;
+        btn.addEventListener('click',e=>{
+          e.stopPropagation();
+          if(isComp&&oi.item.video)openVideoModal(oi.idx);
+          else if(!isComp)showDescPopup(oi.item,e.clientX,e.clientY);
+        });
+        layer.appendChild(btn);overlayEls.push(btn);
+      });
+      mapOverlaysToMeshes();renderGroupPanel();
+    }
+    function updateOverlayPositions(){
+      if(!model||!overlayPos.length)return;
+      const w=container.clientWidth,h=container.clientHeight;
+      overlayPos.forEach((wp,i)=>{
+        let pos=wp;
+        if(explodeAmount>0&&overlayMeshMap[i]>=0){
+          const part=explodeParts[overlayMeshMap[i]];
+          if(part){const origW=part.mesh.parent.localToWorld(part.originalPos.clone());const currW=part.mesh.parent.localToWorld(part.mesh.position.clone());pos=wp.clone().add(currW.sub(origW))}
+        }
+        const p=pos.clone().project(camera);const el=overlayEls[i];if(!el)return;
+        el.style.left=((p.x*0.5+0.5)*w)+'px';el.style.top=((-p.y*0.5+0.5)*h)+'px';el.classList.toggle('behind',p.z>1);
+      });
+    }
+
+    // ─── Description Popup ───
+    function showDescPopup(item,x,y){
+      const dp=$('#desc-popup');dp.querySelector('.dp-title').textContent=item.nombre;
+      dp.querySelector('.dp-text').textContent=item.descripcion||'Sin descripción';
+      dp.style.left=Math.min(x+10,window.innerWidth-270)+'px';dp.style.top=Math.min(y+10,window.innerHeight-100)+'px';
+      dp.classList.add('show');
+    }
+    function hideDescPopup(){$('#desc-popup').classList.remove('show')}
+
+    // ─── Video Modal ───
+    function openVideoModal(i){
+      const c=components[i];if(!c||!c.video)return;
+      $('#modal-num').textContent=i+1;$('#modal-title').textContent=c.nombre;$('#modal-desc').textContent=c.descripcion;
+      const vid=$('#modal-video'),ld=$('#video-loading'),er=$('#video-error');
+      ld.classList.remove('hidden');er.classList.remove('show');
+      let url=c.video;if(!url.startsWith('http')&&cloudinaryBase)url=cloudinaryBase+url;
+      vid.src=url;vid.oncanplay=()=>ld.classList.add('hidden');vid.onerror=()=>{ld.classList.add('hidden');er.classList.add('show')};
+      vid.load();vid.play().catch(()=>{});$('#modal-overlay').classList.add('open');
+    }
+    function closeVideoModal(){const v=$('#modal-video');$('#modal-overlay').classList.remove('open');v.pause();v.removeAttribute('src');v.load()}
+
+    // ─── Group Panel ───
+    function renderGroupPanel(){
+      const gsec=$('#groups-section'),usec=$('#ungrouped-section');
+      gsec.innerHTML='';usec.innerHTML='';
+      const ungroupedC=components.filter(c=>!c.group);
+      const ungroupedL=labels.filter(l=>!l.group);
+
+      if(groups.length){
+        gsec.innerHTML='<div class="section-title">Grupos</div>';
+        groups.forEach(grp=>{
+          const members=[...components.filter(c=>c.group===grp.id),...labels.filter(l=>l.group===grp.id)];
+          const allVis=members.length>0&&members.every(m=>m.visible);
+          const card=document.createElement('div');card.className='group-card';
+          let ih=members.map(m=>{
+            const isC=components.includes(m);
+            return `<div class="gi-row"><input type="checkbox" class="gi-check" data-id="${m.id}" ${m.visible?'checked':''}><span class="gi-dot ${isC?'comp':'lbl'}"></span><span class="gi-name">${m.nombre}</span></div>`;
+          }).join('');
+          if(!members.length)ih='<div style="font-size:.6rem;color:var(--text-dim);padding:.2rem">Vacío</div>';
+          card.innerHTML=`<div class="group-header"><input type="checkbox" class="g-check" ${allVis?'checked':''}><span class="g-name">${grp.nombre}</span><span class="g-count">${members.length}</span></div><div class="group-items">${ih}</div>`;
+          card.querySelector('.g-check').addEventListener('change',e=>{members.forEach(m=>m.visible=e.target.checked);rebuildOverlays()});
+          card.querySelectorAll('.gi-check').forEach(cb=>cb.addEventListener('change',e=>{const id=e.target.dataset.id;const m=[...components,...labels].find(x=>x.id===id);if(m){m.visible=e.target.checked;rebuildOverlays()}}));
+          gsec.appendChild(card);
+        });
+      }
+
+      if(ungroupedC.length||ungroupedL.length){
+        usec.innerHTML='<div class="section-title">Sin Grupo</div>';
+        [...ungroupedC,...ungroupedL].forEach(m=>{
+          const isC=components.includes(m);
+          const row=document.createElement('div');row.className='gi-row';
+          row.innerHTML=`<input type="checkbox" class="gi-check" ${m.visible?'checked':''}><span class="gi-dot ${isC?'comp':'lbl'}"></span><span class="gi-name">${m.nombre}</span>`;
+          row.querySelector('.gi-check').addEventListener('change',e=>{m.visible=e.target.checked;rebuildOverlays()});
+          usec.appendChild(row);
+        });
+      }
+      updateExplodeGroupSelect();
+    }
+
+    // ─── Load Project ───
+    function loadProjectData(proj){
+      components=proj.components||[];labels=proj.labels||[];groups=proj.groups||[];
+      cloudinaryBase=proj.cloudinaryBase||'';
+      components.forEach(c=>{if(c.visible===undefined)c.visible=true});
+      labels.forEach(l=>{if(l.visible===undefined)l.visible=true});
+      $('#proj-name').textContent=proj.name||'AURORA 3D';
+      document.title=`${proj.name||'AURORA 3D'} — Visor`;
+      rebuildOverlays();
+      if(proj.modelUrl)loadFromUrl(proj.modelUrl);
+      else $('#welcome').querySelector('p').textContent='Carga el modelo 3D para explorar el proyecto';
+    }
+
+    // ─── Init ───
+    const params=new URLSearchParams(window.location.search);
+    const projectFile=params.get('project');
+    if(projectFile){
+      fetch(projectFile).then(r=>{if(!r.ok)throw new Error(r.status);return r.json()}).then(loadProjectData)
+        .catch(e=>{console.error('Error cargando proyecto:',e);$('#welcome').querySelector('p').textContent='No se encontró el proyecto. Carga un archivo de proyecto o modelo manualmente.'});
+    }else{
+      $('#welcome').querySelector('p').textContent='No hay proyecto especificado. Carga un modelo 3D para explorar.';
+    }
+
+    // ─── Wiring ───
+    function handleFiles(files){if(files.length)loadFromFiles(Array.from(files))}
+    $('#file-input').addEventListener('change',function(){handleFiles(this.files);this.value=''});
+    $('#file-input-welcome').addEventListener('change',function(){handleFiles(this.files);this.value=''});
+
+    $('#close-panel').addEventListener('click',()=>{$('#panel').classList.add('collapsed');setTimeout(onResize,350)});
+    $('#open-panel').addEventListener('click',()=>{$('#panel').classList.remove('collapsed');setTimeout(onResize,350)});
+    $('#modal-close').addEventListener('click',closeVideoModal);
+    $('#modal-overlay').addEventListener('click',e=>{if(e.target===$('#modal-overlay'))closeVideoModal()});
+    $('#explode-slider').addEventListener('input',e=>{explodeAmount=parseInt(e.target.value)/100;$('#explode-pct').textContent=e.target.value+'%';applyExplode();$('#explode-toggle').classList.toggle('active',explodeAmount>0)});
+    $('#explode-toggle').addEventListener('click',()=>{explodeActive=!explodeActive;animateExplodeTo(explodeActive?60:0)});
+    $('#explode-group-sel').addEventListener('change',e=>{explodeGroup=e.target.value;applyExplode()});
+    document.addEventListener('click',e=>{if(!e.target.closest('#desc-popup')&&!e.target.closest('.hs-3d'))hideDescPopup()});
+    $('#desc-popup').querySelector('.dp-close').addEventListener('click',hideDescPopup);
+    document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeVideoModal();hideDescPopup()}});
+  </script>
+</body>
+</html>
