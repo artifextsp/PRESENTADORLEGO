@@ -2,6 +2,6 @@
 # Cárgalos desde la interfaz de la plataforma directamente
 assets/*.obj
 assets/*.mtl
-assets/*.glb
+# assets/*.glb  ← permitido para que el visor de jueces cargue el modelo
 assets/*.dae
 .DS_Store
