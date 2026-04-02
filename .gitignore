@@ -1,0 +1,7 @@
+# Los modelos 3D son muy pesados para GitHub (>50MB)
+# Cárgalos desde la interfaz de la plataforma directamente
+assets/*.obj
+assets/*.mtl
+assets/*.glb
+assets/*.dae
+.DS_Store
