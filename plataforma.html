@@ -122,6 +122,18 @@
     .explode-btn{padding:.35rem .7rem;border-radius:50px;border:1px solid rgba(59,130,246,.3);background:rgba(59,130,246,.15);color:var(--accent);font-size:.68rem;font-weight:700;font-family:inherit;cursor:pointer;white-space:nowrap}
     .explode-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
     #explode-group-sel{padding:.3rem .5rem;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:var(--bg-input);color:var(--text);font-family:inherit;font-size:.68rem;max-width:120px}
+    #innov-panel{position:absolute;top:12px;right:12px;z-index:8;background:rgba(14,19,34,.85);backdrop-filter:blur(12px);border:1px solid rgba(245,158,11,.15);border-radius:14px;min-width:180px;max-width:260px;overflow:hidden;transition:all .3s;display:none}
+    #innov-panel.visible{display:block}
+    #innov-panel.collapsed .innov-list{display:none}
+    .innov-header{display:flex;align-items:center;justify-content:space-between;padding:.55rem .8rem;cursor:pointer;user-select:none}
+    .innov-title{font-size:.72rem;font-weight:900;letter-spacing:.1em;text-transform:uppercase;background:linear-gradient(135deg,var(--hotspot),#fbbf24);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .innov-toggle{font-size:.7rem;color:var(--text-dim);transition:transform .3s}
+    #innov-panel.collapsed .innov-toggle{transform:rotate(-90deg)}
+    .innov-list{padding:0 .4rem .5rem}
+    .innov-item{display:flex;align-items:center;gap:.5rem;padding:.4rem .5rem;border-radius:8px;cursor:pointer;transition:background .15s;font-size:.75rem}
+    .innov-item:hover{background:rgba(245,158,11,.12)}
+    .innov-num{width:26px;height:26px;border-radius:50%;background:var(--hotspot);color:#111;font-weight:800;font-size:.72rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 2px 8px rgba(245,158,11,.3)}
+    .innov-name{color:var(--text);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     .placing-msg{position:absolute;top:12px;left:50%;transform:translateX(-50%);padding:.45rem 1rem;border-radius:50px;font-size:.78rem;font-weight:700;z-index:8;display:none;box-shadow:0 4px 15px rgba(0,0,0,.4)}
     .placing-msg.visible{display:block}.placing-msg.comp-mode{background:var(--hotspot);color:#111}.placing-msg.label-mode{background:var(--label-color);color:#111}
     #modal-overlay{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.75);backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;opacity:0;visibility:hidden;transition:opacity .35s,visibility .35s}
@@ -186,7 +198,7 @@
           </div>
         </div>
         <div class="tab-panel" id="panel-items">
-          <div class="section"><div class="section-title">Componentes (con video)</div><button class="btn btn-primary btn-sm" id="add-comp-btn" style="margin-bottom:.6rem">+ Componente</button><div id="comp-list"></div></div>
+          <div class="section"><div class="section-title">Innovaciones (con video/imagen)</div><button class="btn btn-primary btn-sm" id="add-comp-btn" style="margin-bottom:.6rem">+ Innovación</button><div id="comp-list"></div></div>
           <div class="section"><div class="section-title">Etiquetas (anotaciones)</div><button class="btn btn-sm" id="add-label-btn" style="margin-bottom:.6rem;border-color:rgba(6,182,212,.3);color:var(--label-color)">+ Etiqueta</button><div id="label-list"></div></div>
         </div>
         <div class="tab-panel" id="panel-groups">
@@ -209,6 +221,7 @@
       <div class="topbar"><div class="topbar-left"><button class="toggle-sidebar-btn" id="open-sidebar">☰</button><span class="project-name-top" id="topbar-name">Mi Robot FLL</span></div><div class="topbar-right"><span class="status-badge badge-edit" id="mode-badge">EDICIÓN</span></div></div>
       <div id="scene-container">
         <canvas id="canvas"></canvas><div id="hotspot-layer"></div><div class="placing-msg" id="placing-msg"></div>
+        <div id="innov-panel"><div class="innov-header" id="innov-toggle-btn"><span class="innov-title">Innovaciones</span><span class="innov-toggle">▼</span></div><div class="innov-list" id="innov-list"></div></div>
         <div id="explode-panel"><button class="explode-btn" id="explode-toggle">Despiece</button><select id="explode-group-sel"><option value="">Todos</option></select><label>Separación</label><input type="range" id="explode-slider" min="0" max="100" value="0"><span id="explode-pct">0%</span></div>
         <div class="loading-overlay" id="loading-3d"><div class="load-spinner"></div><span class="load-text" id="load-text">Cargando...</span></div>
         <div class="welcome-screen" id="welcome"><img src="assets/aurora-logo.png" alt="AURORA 3D"><p>Arrastra un modelo 3D (.OBJ + .MTL) desde el panel izquierdo para comenzar</p></div>
@@ -387,10 +400,10 @@
 
     // ─── Overlays ───
     function rebuildOverlays(){const layer=$('#hotspot-layer');layer.innerHTML='';overlayEls=[];overlayPos=[];overlayItems=[];
-      const allItems=[...components.map((c,i)=>({item:c,type:'comp',idx:i})),...labels.map((l,i)=>({item:l,type:'label',idx:i}))];
-      allItems.forEach(oi=>{const pos=parseVec3(oi.item.posicion);overlayPos.push(pos);overlayItems.push(oi);const btn=document.createElement('button');btn.className='hs-3d '+(oi.type==='comp'?'hs-comp':'hs-label');if(!oi.item.visible)btn.classList.add('hidden-item');const isComp=oi.type==='comp';if(isComp)btn.innerHTML=`<span class="dot comp-dot">${oi.idx+1}</span><span class="tag">${oi.item.nombre}</span>`;else btn.innerHTML=`<span class="dot label-dot"></span><span class="tag">${oi.item.nombre}</span>`;btn.addEventListener('click',e=>{e.stopPropagation();if(placingMode)return;if(isComp&&oi.item.video)openVideoModal(oi.idx);else if(!isComp)showDescPopup(oi.item,e.clientX,e.clientY)});layer.appendChild(btn);overlayEls.push(btn)});
-      mapOverlaysToMeshes();renderItemLists();renderGroupList();updateExplodeGroupSelect();
+      labels.forEach((l,i)=>{const oi={item:l,type:'label',idx:i};const pos=parseVec3(l.posicion);overlayPos.push(pos);overlayItems.push(oi);const btn=document.createElement('button');btn.className='hs-3d hs-label';if(!l.visible)btn.classList.add('hidden-item');btn.innerHTML=`<span class="dot label-dot"></span><span class="tag">${l.nombre}</span>`;btn.addEventListener('click',e=>{e.stopPropagation();if(placingMode)return;showDescPopup(l,e.clientX,e.clientY)});layer.appendChild(btn);overlayEls.push(btn)});
+      mapOverlaysToMeshes();rebuildInnovationsPanel();renderItemLists();renderGroupList();updateExplodeGroupSelect();
     }
+    function rebuildInnovationsPanel(){const panel=$('#innov-panel'),list=$('#innov-list');list.innerHTML='';if(!components.length){panel.classList.remove('visible');return}panel.classList.add('visible');components.forEach((c,i)=>{const row=document.createElement('div');row.className='innov-item';row.innerHTML=`<span class="innov-num">${i+1}</span><span class="innov-name">${c.nombre}</span>`;row.addEventListener('click',()=>{if(c.video)openVideoModal(i)});list.appendChild(row)})}
     function updateOverlayPositions(){if(!model||!overlayPos.length)return;const w=container.clientWidth,h=container.clientHeight;const camDir=controls.target.clone().sub(camera.position).normalize();overlayPos.forEach((wp,i)=>{let pos=wp;if(explodeAmount>0&&overlayMeshMap[i]>=0){const part=explodeParts[overlayMeshMap[i]];if(part){const origW=part.mesh.parent.localToWorld(part.originalPos.clone());const currW=part.mesh.parent.localToWorld(part.mesh.position.clone());pos=wp.clone().add(currW.sub(origW))}}const p=pos.clone().project(camera);const toOv=pos.clone().sub(controls.target).normalize();const behind=p.z>1||camDir.dot(toOv)>0.15;const el=overlayEls[i];if(!el)return;el.style.left=((p.x*0.5+0.5)*w)+'px';el.style.top=((-p.y*0.5+0.5)*h)+'px';el.classList.toggle('behind',behind)})}
     function showDescPopup(item,x,y){const dp=$('#desc-popup');dp.querySelector('.dp-title').textContent=item.nombre;dp.querySelector('.dp-text').textContent=item.descripcion||'Sin descripción';dp.style.left=Math.min(x+10,window.innerWidth-290)+'px';dp.style.top=Math.min(y+10,window.innerHeight-120)+'px';dp.classList.add('show')}
     function hideDescPopup(){$('#desc-popup').classList.remove('show')}
@@ -401,7 +414,7 @@
     // ─── Editor ───
     function startPlacing(type){if(!model){alert('Carga un modelo 3D primero');return}placingMode=type;editingIdx=-1;editingType=type;const msg=$('#placing-msg');msg.textContent=type==='comp'?'Haz clic en el modelo para ubicar el componente':'Haz clic en el modelo para ubicar la etiqueta';msg.className='placing-msg visible '+(type==='comp'?'comp-mode':'label-mode');canvas.style.cursor='crosshair'}
     canvas.addEventListener('click',e=>{if(!placingMode||!model)return;const r=canvas.getBoundingClientRect();mouse.x=((e.clientX-r.left)/r.width)*2-1;mouse.y=-((e.clientY-r.top)/r.height)*2+1;raycaster.setFromCamera(mouse,camera);const hits=raycaster.intersectObject(model,true);if(hits.length>0){const p=hits[0].point;const ps=`${p.x.toFixed(4)} ${p.y.toFixed(4)} ${p.z.toFixed(4)}`;placingMode=null;$('#placing-msg').classList.remove('visible');canvas.style.cursor='';openEditor(editingType,-1,ps)}});
-    function openEditor(type,idx,posStr){editingType=type;editingIdx=idx;const isComp=type==='comp';const item=idx>=0?(isComp?components[idx]:labels[idx]):null;$('#edit-title').textContent=item?`Editar ${isComp?'Componente':'Etiqueta'}`:`${isComp?'Nuevo Componente':'Nueva Etiqueta'}`;$('#ed-name').value=item?.nombre||'';$('#ed-desc').value=item?.descripcion||'';$('#ed-video').value=item?.video||'';$('#ed-pos').value=posStr||item?.posicion||'';$('#ed-video-group').style.display=isComp?'':'none';const sel=$('#ed-group');sel.innerHTML='<option value="">— Sin grupo —</option>';groups.forEach(g=>{const o=document.createElement('option');o.value=g.id;o.textContent=g.nombre;sel.appendChild(o)});if(item?.group)sel.value=item.group;$('#edit-modal').classList.add('open');setTimeout(()=>$('#ed-name').focus(),100)}
+    function openEditor(type,idx,posStr){editingType=type;editingIdx=idx;const isComp=type==='comp';const item=idx>=0?(isComp?components[idx]:labels[idx]):null;$('#edit-title').textContent=item?`Editar ${isComp?'Innovación':'Etiqueta'}`:`${isComp?'Nueva Innovación':'Nueva Etiqueta'}`;$('#ed-name').value=item?.nombre||'';$('#ed-desc').value=item?.descripcion||'';$('#ed-video').value=item?.video||'';$('#ed-pos').value=posStr||item?.posicion||'0 0 0';$('#ed-video-group').style.display=isComp?'':'none';$('#ed-pos').parentElement.style.display=isComp?'none':'';const sel=$('#ed-group');sel.innerHTML='<option value="">— Sin grupo —</option>';groups.forEach(g=>{const o=document.createElement('option');o.value=g.id;o.textContent=g.nombre;sel.appendChild(o)});if(item?.group)sel.value=item.group;$('#edit-modal').classList.add('open');setTimeout(()=>$('#ed-name').focus(),100)}
     function saveEditor(){const nombre=$('#ed-name').value.trim();if(!nombre){alert('Escribe un nombre');return}const posicion=$('#ed-pos').value.trim();if(!posicion){alert('Necesitas una posición 3D');return}const obj={id:nombre.toLowerCase().replace(/\s+/g,'-')+'-'+Date.now(),nombre,descripcion:$('#ed-desc').value.trim(),video:$('#ed-video').value.trim(),posicion,group:$('#ed-group').value,visible:true};const isComp=editingType==='comp';if(editingIdx>=0){const old=isComp?components[editingIdx]:labels[editingIdx];obj.id=old.id;obj.visible=old.visible;if(isComp)components[editingIdx]=obj;else labels[editingIdx]=obj}else{if(isComp)components.push(obj);else labels.push(obj)}$('#edit-modal').classList.remove('open');rebuildOverlays()}
     let editingGroupIdx=-1;
     function openGroupEditor(idx){editingGroupIdx=idx;const g=idx>=0?groups[idx]:null;$('#grp-title').textContent=g?'Editar Grupo':'Nuevo Grupo';$('#grp-name').value=g?.nombre||'';$('#group-modal').classList.add('open');setTimeout(()=>$('#grp-name').focus(),100)}
@@ -533,7 +546,7 @@
     $('#close-sidebar').addEventListener('click',()=>{$('#sidebar').classList.add('collapsed');setTimeout(onResize,350)});
     $('#open-sidebar').addEventListener('click',()=>{$('#sidebar').classList.remove('collapsed');$('#mode-badge').className='status-badge badge-edit';$('#mode-badge').textContent='EDICIÓN';setTimeout(onResize,350)});
     $('#project-name').addEventListener('input',e=>$('#topbar-name').textContent=e.target.value||'AURORA 3D');
-    $('#add-comp-btn').addEventListener('click',()=>startPlacing('comp'));
+    $('#add-comp-btn').addEventListener('click',()=>openEditor('comp',-1,'0 0 0'));
     $('#add-label-btn').addEventListener('click',()=>startPlacing('label'));
     $('#add-group-btn').addEventListener('click',()=>openGroupEditor(-1));
     $('#show-all-btn').addEventListener('click',()=>{[...components,...labels].forEach(m=>m.visible=true);rebuildOverlays()});
@@ -552,6 +565,7 @@
     $('#pub-manual-done').addEventListener('click',()=>$('#publish-modal').classList.remove('open'));
     $('#pub-download-json').addEventListener('click',downloadPubJSON);
     $('#present-btn').addEventListener('click',togglePresent);
+    $('#innov-toggle-btn').addEventListener('click',()=>$('#innov-panel').classList.toggle('collapsed'));
     $('#explode-slider').addEventListener('input',e=>{explodeAmount=parseInt(e.target.value)/100;$('#explode-pct').textContent=e.target.value+'%';applyExplode();$('#explode-toggle').classList.toggle('active',explodeAmount>0)});
     $('#explode-toggle').addEventListener('click',()=>{explodeActive=!explodeActive;animateExplodeTo(explodeActive?60:0)});
     $('#explode-group-sel').addEventListener('change',e=>{explodeGroup=e.target.value;applyExplode()});
