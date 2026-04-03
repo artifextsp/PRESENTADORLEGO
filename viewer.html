@@ -159,12 +159,17 @@
     .modal-body{padding:.7rem 1rem 1rem;overflow-y:auto}
     .modal-description{color:var(--text-dim);font-size:.82rem;line-height:1.5}
 
-    #onboard-tip{position:fixed;top:54px;left:56px;z-index:90;background:var(--accent);color:#fff;padding:.55rem .9rem;border-radius:12px;font-size:.75rem;font-weight:600;line-height:1.4;max-width:240px;box-shadow:0 8px 25px rgba(59,130,246,.4);opacity:0;visibility:hidden;transform:translateY(6px);transition:all .4s}
-    #onboard-tip.show{opacity:1;visibility:visible;transform:translateY(0)}
-    #onboard-tip::before{content:'';position:absolute;top:-6px;left:14px;width:12px;height:12px;background:var(--accent);transform:rotate(45deg);border-radius:2px}
-    #onboard-tip .ob-dismiss{display:inline-block;margin-top:.3rem;font-size:.62rem;opacity:.8;cursor:pointer;text-decoration:underline}
+    .ob-tip{position:fixed;z-index:90;padding:.55rem .9rem;border-radius:12px;font-size:.75rem;font-weight:600;line-height:1.4;max-width:240px;opacity:0;visibility:hidden;transform:translateY(6px);transition:all .4s;color:#fff}
+    .ob-tip.show{opacity:1;visibility:visible;transform:translateY(0)}
+    .ob-tip .ob-dismiss{display:inline-block;margin-top:.3rem;font-size:.62rem;opacity:.8;cursor:pointer;text-decoration:underline}
+    .ob-tip::before{content:'';position:absolute;width:12px;height:12px;transform:rotate(45deg);border-radius:2px}
+    #onboard-tip1{top:54px;left:56px;background:var(--accent);box-shadow:0 8px 25px rgba(59,130,246,.4)}
+    #onboard-tip1::before{top:-6px;left:14px;background:var(--accent)}
+    #onboard-tip2{top:100px;left:12px;background:var(--hotspot);box-shadow:0 8px 25px rgba(245,158,11,.4)}
+    #onboard-tip2::before{top:-6px;left:20px;background:var(--hotspot)}
+    #onboard-tip2 .ob-dismiss{color:#fff}
 
-    @media(max-width:768px){#panel{position:fixed;left:0;top:0;bottom:0;z-index:30}#onboard-tip{left:10px;top:54px}}
+    @media(max-width:768px){#panel{position:fixed;left:0;top:0;bottom:0;z-index:30}#onboard-tip1{left:10px;top:54px}#onboard-tip2{left:10px;top:100px}}
   </style>
 </head>
 <body>
@@ -213,7 +218,8 @@
         </div>
         <span class="viewer-badge">VISOR</span>
       </div>
-      <div id="onboard-tip">Explora las partes del robot desde el menú ☰<br><span class="ob-dismiss" id="ob-dismiss">Entendido</span></div>
+      <div class="ob-tip" id="onboard-tip1">Explora los componentes del robot desde el menú ☰<br><span class="ob-dismiss" id="ob-dismiss1">Entendido</span></div>
+      <div class="ob-tip" id="onboard-tip2">Descubre las innovaciones de nuestro robot y estrategia desde este menú<br><span class="ob-dismiss" id="ob-dismiss2">Entendido</span></div>
       <div id="scene-container">
         <canvas id="canvas"></canvas>
         <div id="hotspot-layer"></div>
@@ -478,18 +484,27 @@
       const target=$('#tab-'+tab.dataset.tab);if(target)target.classList.add('active');
     }));
 
-    // ─── Onboarding popup ───
-    const OB_KEY='aurora3d_onboard_seen';
+    // ─── Onboarding popup (2 pasos) ───
+    const OB_KEY='aurora3d_onboard_v2';
     function showOnboard(){
       if(localStorage.getItem(OB_KEY))return;
-      setTimeout(()=>{const tip=$('#onboard-tip');if(tip)tip.classList.add('show')},1500);
+      setTimeout(()=>{const t1=$('#onboard-tip1');if(t1)t1.classList.add('show')},1500);
     }
-    function dismissOnboard(){
+    function dismissStep1(){
+      const t1=$('#onboard-tip1');if(t1)t1.classList.remove('show');
+      setTimeout(()=>{const t2=$('#onboard-tip2');if(t2)t2.classList.add('show')},400);
+    }
+    function dismissStep2(){
       localStorage.setItem(OB_KEY,'1');
-      const tip=$('#onboard-tip');if(tip)tip.classList.remove('show');
+      const t2=$('#onboard-tip2');if(t2)t2.classList.remove('show');
     }
-    $('#ob-dismiss').addEventListener('click',dismissOnboard);
-    $('#open-panel').addEventListener('click',dismissOnboard);
+    $('#ob-dismiss1').addEventListener('click',dismissStep1);
+    $('#ob-dismiss2').addEventListener('click',dismissStep2);
+    $('#open-panel').addEventListener('click',()=>{
+      const t1=$('#onboard-tip1'),t2=$('#onboard-tip2');
+      if(t1&&t1.classList.contains('show')){dismissStep1()}
+      else if(t2&&t2.classList.contains('show')){dismissStep2()}
+    });
     showOnboard();
   </script>
 </body>
