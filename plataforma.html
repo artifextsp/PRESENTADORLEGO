@@ -247,8 +247,8 @@
       <div class="pub-step" id="pub-step-progress">
         <h3>Publicando...</h3>
         <ul class="pub-progress-list" id="pub-progress-list">
-          <li id="ps-glb"><span class="icon">⏳</span> Verificando modelo 3D</li>
-          <li id="ps-upload-glb"><span class="icon">⏳</span> Modelo 3D listo</li>
+          <li id="ps-glb"><span class="icon">⏳</span> Conectando con GitHub</li>
+          <li id="ps-upload-glb"><span class="icon">⏳</span> Repositorio verificado</li>
           <li id="ps-upload-json"><span class="icon">⏳</span> Subiendo proyecto</li>
           <li id="ps-manifest"><span class="icon">⏳</span> Actualizando galería</li>
         </ul>
@@ -406,13 +406,18 @@
 
     async function ghAPI(method,path,body,token){
       const r=await fetch(`https://api.github.com/repos/${path}`,{method,headers:{'Authorization':`token ${token}`,'Content-Type':'application/json','Accept':'application/vnd.github.v3+json'},body:body?JSON.stringify(body):undefined});
-      if(!r.ok&&r.status!==404)throw new Error(`GitHub API ${r.status}: ${await r.text()}`);
       if(r.status===404)return null;
+      if(r.status===403)return {error403:true};
+      if(!r.ok)throw new Error(`GitHub API ${r.status}: ${await r.text()}`);
       return r.json();
     }
 
+    async function ghFileExists(repo,filePath,token){
+      try{const r=await ghAPI('GET',`${repo}/contents/${filePath}`,null,token);return r&&!r.error403?r:r?.error403?{sha:null,exists:true}:null}catch{return null}
+    }
+
     async function ghPutFile(repo,filePath,content,token,message){
-      const existing=await ghAPI('GET',`${repo}/contents/${filePath}`,null,token);
+      const existing=await ghFileExists(repo,filePath,token);
       const body={message,content};
       if(existing?.sha)body.sha=existing.sha;
       return ghAPI('PUT',`${repo}/contents/${filePath}`,body,token);
@@ -450,13 +455,9 @@
 
       try{
         setStepStatus('ps-glb','doing');
-        const existing=await ghAPI('GET',`${repo}/contents/${modelPath}`,null,token);
-        if(existing){setStepStatus('ps-glb','done');setStepStatus('ps-upload-glb','done')}
-        else{
-          setStepStatus('ps-glb','done');setStepStatus('ps-upload-glb','doing');
-          try{const glbBuffer=await exportModelAsGLB();const glbBase64=arrayBufferToBase64(glbBuffer);await ghPutFile(repo,modelPath,glbBase64,token,`AURORA 3D: modelo ${projName}`);setStepStatus('ps-upload-glb','done')}
-          catch(glbErr){console.warn('GLB upload skipped (too large):',glbErr);setStepStatus('ps-upload-glb','fail');alert('El modelo 3D es muy grande para subir desde el navegador.\nSúbelo manualmente al repo con: git add '+modelPath+' && git push\n\nEl proyecto JSON se subirá normalmente.')}
-        }
+        try{await ghAPI('GET',`${repo}`,null,token)}catch(e){throw new Error('No se pudo conectar con GitHub. Verifica tu token y repo.')}
+        setStepStatus('ps-glb','done');
+        setStepStatus('ps-upload-glb','done');
 
         setStepStatus('ps-upload-json','doing');
         const proj={version:3,name:projName,cloudinaryBase:$('#cloudinary-base').value,modelUrl:modelPath,components,labels,groups};
@@ -466,8 +467,8 @@
 
         setStepStatus('ps-manifest','doing');
         let manifest=[];
-        const existingManifest=await ghAPI('GET',`${repo}/contents/aurora-projects.json`,null,token);
-        if(existingManifest?.content){try{manifest=JSON.parse(atob(existingManifest.content.replace(/\n/g,'')))}catch{manifest=[]}}
+        const existingManifest=await ghFileExists(repo,'aurora-projects.json',token);
+        if(existingManifest?.sha){const raw=await ghAPI('GET',`${repo}/contents/aurora-projects.json`,null,token);if(raw?.content){try{manifest=JSON.parse(atob(raw.content.replace(/\n/g,'')))}catch{manifest=[]}}}
         const idx=manifest.findIndex(m=>m.file===`${slug}.json`);
         const entry={name:projName,file:`${slug}.json`,icon,description:desc};
         if(idx>=0)manifest[idx]=entry;else manifest.push(entry);
