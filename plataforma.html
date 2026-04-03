@@ -99,7 +99,8 @@
     .loading-overlay.visible{display:flex}
     .load-spinner{width:44px;height:44px;border:3px solid rgba(255,255,255,.1);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite}
     @keyframes spin{to{transform:rotate(360deg)}}.load-text{margin-top:.8rem;font-size:.85rem;color:var(--text-dim)}
-    .hs-3d{position:absolute;transform:translate(-50%,-50%);display:flex;align-items:center;gap:.35rem;pointer-events:auto;cursor:pointer;border:none;background:none;padding:0;transition:opacity .3s;z-index:6}
+    .hs-3d{position:absolute;transform:translateY(-50%);display:flex;align-items:center;gap:.35rem;pointer-events:auto;cursor:pointer;border:none;background:none;padding:0;transition:opacity .3s;z-index:6}
+    .hs-3d.hs-comp{margin-left:-18px}.hs-3d.hs-label{margin-left:-7px}
     .hs-3d.behind{opacity:0;pointer-events:none}.hs-3d.hidden-item{display:none!important}
     .hs-3d .dot{border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Inter',sans-serif;font-weight:800;color:#111;flex-shrink:0}
     .hs-3d .dot.comp-dot{width:36px;height:36px;font-size:.8rem;background:var(--hotspot);box-shadow:0 0 0 0 var(--hotspot-glow);animation:pulse3d 2.5s ease-in-out infinite}
@@ -246,8 +247,8 @@
       <div class="pub-step" id="pub-step-progress">
         <h3>Publicando...</h3>
         <ul class="pub-progress-list" id="pub-progress-list">
-          <li id="ps-glb"><span class="icon">⏳</span> Convirtiendo modelo a GLB</li>
-          <li id="ps-upload-glb"><span class="icon">⏳</span> Subiendo modelo 3D</li>
+          <li id="ps-glb"><span class="icon">⏳</span> Verificando modelo 3D</li>
+          <li id="ps-upload-glb"><span class="icon">⏳</span> Modelo 3D listo</li>
           <li id="ps-upload-json"><span class="icon">⏳</span> Subiendo proyecto</li>
           <li id="ps-manifest"><span class="icon">⏳</span> Actualizando galería</li>
         </ul>
@@ -368,10 +369,10 @@
     // ─── Overlays ───
     function rebuildOverlays(){const layer=$('#hotspot-layer');layer.innerHTML='';overlayEls=[];overlayPos=[];overlayItems=[];
       const allItems=[...components.map((c,i)=>({item:c,type:'comp',idx:i})),...labels.map((l,i)=>({item:l,type:'label',idx:i}))];
-      allItems.forEach(oi=>{const pos=parseVec3(oi.item.posicion);overlayPos.push(pos);overlayItems.push(oi);const btn=document.createElement('button');btn.className='hs-3d';if(!oi.item.visible)btn.classList.add('hidden-item');const isComp=oi.type==='comp';if(isComp)btn.innerHTML=`<span class="dot comp-dot">${oi.idx+1}</span><span class="tag">${oi.item.nombre}</span>`;else btn.innerHTML=`<span class="dot label-dot"></span><span class="tag">${oi.item.nombre}</span>`;btn.addEventListener('click',e=>{e.stopPropagation();if(placingMode)return;if(isComp&&oi.item.video)openVideoModal(oi.idx);else if(!isComp)showDescPopup(oi.item,e.clientX,e.clientY)});layer.appendChild(btn);overlayEls.push(btn)});
+      allItems.forEach(oi=>{const pos=parseVec3(oi.item.posicion);overlayPos.push(pos);overlayItems.push(oi);const btn=document.createElement('button');btn.className='hs-3d '+(oi.type==='comp'?'hs-comp':'hs-label');if(!oi.item.visible)btn.classList.add('hidden-item');const isComp=oi.type==='comp';if(isComp)btn.innerHTML=`<span class="dot comp-dot">${oi.idx+1}</span><span class="tag">${oi.item.nombre}</span>`;else btn.innerHTML=`<span class="dot label-dot"></span><span class="tag">${oi.item.nombre}</span>`;btn.addEventListener('click',e=>{e.stopPropagation();if(placingMode)return;if(isComp&&oi.item.video)openVideoModal(oi.idx);else if(!isComp)showDescPopup(oi.item,e.clientX,e.clientY)});layer.appendChild(btn);overlayEls.push(btn)});
       mapOverlaysToMeshes();renderItemLists();renderGroupList();updateExplodeGroupSelect();
     }
-    function updateOverlayPositions(){if(!model||!overlayPos.length)return;const w=container.clientWidth,h=container.clientHeight;overlayPos.forEach((wp,i)=>{let pos=wp;if(explodeAmount>0&&overlayMeshMap[i]>=0){const part=explodeParts[overlayMeshMap[i]];if(part){const origW=part.mesh.parent.localToWorld(part.originalPos.clone());const currW=part.mesh.parent.localToWorld(part.mesh.position.clone());pos=wp.clone().add(currW.sub(origW))}}const p=pos.clone().project(camera);const el=overlayEls[i];if(!el)return;el.style.left=((p.x*0.5+0.5)*w)+'px';el.style.top=((-p.y*0.5+0.5)*h)+'px';el.classList.toggle('behind',p.z>1)})}
+    function updateOverlayPositions(){if(!model||!overlayPos.length)return;const w=container.clientWidth,h=container.clientHeight;const camDir=controls.target.clone().sub(camera.position).normalize();overlayPos.forEach((wp,i)=>{let pos=wp;if(explodeAmount>0&&overlayMeshMap[i]>=0){const part=explodeParts[overlayMeshMap[i]];if(part){const origW=part.mesh.parent.localToWorld(part.originalPos.clone());const currW=part.mesh.parent.localToWorld(part.mesh.position.clone());pos=wp.clone().add(currW.sub(origW))}}const p=pos.clone().project(camera);const toOv=pos.clone().sub(controls.target).normalize();const behind=p.z>1||camDir.dot(toOv)>0.15;const el=overlayEls[i];if(!el)return;el.style.left=((p.x*0.5+0.5)*w)+'px';el.style.top=((-p.y*0.5+0.5)*h)+'px';el.classList.toggle('behind',behind)})}
     function showDescPopup(item,x,y){const dp=$('#desc-popup');dp.querySelector('.dp-title').textContent=item.nombre;dp.querySelector('.dp-text').textContent=item.descripcion||'Sin descripción';dp.style.left=Math.min(x+10,window.innerWidth-290)+'px';dp.style.top=Math.min(y+10,window.innerHeight-120)+'px';dp.classList.add('show')}
     function hideDescPopup(){$('#desc-popup').classList.remove('show')}
     function renderItemLists(){renderList($('#comp-list'),components,'comp');renderList($('#label-list'),labels,'label')}
@@ -444,20 +445,21 @@
       const projName=$('#project-name').value||'Mi Proyecto';
       const slug=projName.replace(/\s+/g,'-').toLowerCase();
       const icon=$('#pub-icon').value;const desc=$('#pub-desc').value.trim();
+      const modelPath=currentModelFile||`assets/${slug}.glb`;
       setPubStep('progress');
 
       try{
         setStepStatus('ps-glb','doing');
-        const glbBuffer=await exportModelAsGLB();
-        const glbBase64=arrayBufferToBase64(glbBuffer);
-        setStepStatus('ps-glb','done');
-
-        setStepStatus('ps-upload-glb','doing');
-        await ghPutFile(repo,`assets/${slug}.glb`,glbBase64,token,`AURORA 3D: modelo ${projName}`);
-        setStepStatus('ps-upload-glb','done');
+        const existing=await ghAPI('GET',`${repo}/contents/${modelPath}`,null,token);
+        if(existing){setStepStatus('ps-glb','done');setStepStatus('ps-upload-glb','done')}
+        else{
+          setStepStatus('ps-glb','done');setStepStatus('ps-upload-glb','doing');
+          try{const glbBuffer=await exportModelAsGLB();const glbBase64=arrayBufferToBase64(glbBuffer);await ghPutFile(repo,modelPath,glbBase64,token,`AURORA 3D: modelo ${projName}`);setStepStatus('ps-upload-glb','done')}
+          catch(glbErr){console.warn('GLB upload skipped (too large):',glbErr);setStepStatus('ps-upload-glb','fail');alert('El modelo 3D es muy grande para subir desde el navegador.\nSúbelo manualmente al repo con: git add '+modelPath+' && git push\n\nEl proyecto JSON se subirá normalmente.')}
+        }
 
         setStepStatus('ps-upload-json','doing');
-        const proj={version:3,name:projName,cloudinaryBase:$('#cloudinary-base').value,modelUrl:`assets/${slug}.glb`,components,labels,groups};
+        const proj={version:3,name:projName,cloudinaryBase:$('#cloudinary-base').value,modelUrl:modelPath,components,labels,groups};
         const jsonBase64=btoa(unescape(encodeURIComponent(JSON.stringify(proj,null,2))));
         await ghPutFile(repo,`${slug}.json`,jsonBase64,token,`AURORA 3D: proyecto ${projName}`);
         setStepStatus('ps-upload-json','done');
