@@ -163,13 +163,13 @@
     .ob-tip.show{opacity:1;visibility:visible;transform:translateY(0)}
     .ob-tip .ob-dismiss{display:inline-block;margin-top:.3rem;font-size:.62rem;opacity:.8;cursor:pointer;text-decoration:underline}
     .ob-tip::before{content:'';position:absolute;width:12px;height:12px;transform:rotate(45deg);border-radius:2px}
-    #onboard-tip1{top:54px;left:56px;background:var(--accent);box-shadow:0 8px 25px rgba(59,130,246,.4)}
-    #onboard-tip1::before{top:-6px;left:14px;background:var(--accent)}
-    #onboard-tip2{top:100px;left:12px;background:var(--hotspot);box-shadow:0 8px 25px rgba(245,158,11,.4)}
-    #onboard-tip2::before{top:-6px;left:20px;background:var(--hotspot)}
+    #onboard-tip1{top:120px;left:16px;background:var(--accent);box-shadow:0 8px 25px rgba(59,130,246,.4)}
+    #onboard-tip1::before{top:-6px;left:30px;background:var(--accent)}
+    #onboard-tip2{top:120px;left:130px;background:var(--hotspot);box-shadow:0 8px 25px rgba(245,158,11,.4)}
+    #onboard-tip2::before{top:-6px;left:30px;background:var(--hotspot)}
     #onboard-tip2 .ob-dismiss{color:#fff}
 
-    @media(max-width:768px){#panel{position:fixed;left:0;top:0;bottom:0;z-index:30}#onboard-tip1{left:10px;top:54px}#onboard-tip2{left:10px;top:100px}}
+    @media(max-width:768px){#panel{position:fixed;left:0;top:0;bottom:0;z-index:30}#onboard-tip1{left:10px;top:120px}#onboard-tip2{left:120px;top:120px}}
   </style>
 </head>
 <body>
@@ -218,8 +218,8 @@
         </div>
         <span class="viewer-badge">VISOR</span>
       </div>
-      <div class="ob-tip" id="onboard-tip1">Explora los componentes del robot desde el menú ☰<br><span class="ob-dismiss" id="ob-dismiss1">Entendido</span></div>
-      <div class="ob-tip" id="onboard-tip2">Descubre las innovaciones de nuestro robot y estrategia desde este menú<br><span class="ob-dismiss" id="ob-dismiss2">Entendido</span></div>
+      <div class="ob-tip" id="onboard-tip1">Activa los componentes del robot desde esta pestaña ↑<br><span class="ob-dismiss" id="ob-dismiss1">Entendido</span></div>
+      <div class="ob-tip" id="onboard-tip2">Explora las innovaciones y estrategia desde esta pestaña ↑<br><span class="ob-dismiss" id="ob-dismiss2">Entendido</span></div>
       <div id="scene-container">
         <canvas id="canvas"></canvas>
         <div id="hotspot-layer"></div>
@@ -485,26 +485,26 @@
     }));
 
     // ─── Onboarding popup (2 pasos) ───
-    const OB_KEY='aurora3d_onboard_v2';
+    const OB_KEY='aurora3d_onboard_v3';
     function showOnboard(){
       if(localStorage.getItem(OB_KEY))return;
-      setTimeout(()=>{const t1=$('#onboard-tip1');if(t1)t1.classList.add('show')},1500);
+      $('#panel').classList.remove('collapsed');
+      setTimeout(()=>{const t1=$('#onboard-tip1');if(t1)t1.classList.add('show')},1800);
     }
     function dismissStep1(){
       const t1=$('#onboard-tip1');if(t1)t1.classList.remove('show');
-      setTimeout(()=>{const t2=$('#onboard-tip2');if(t2)t2.classList.add('show')},400);
+      const innovTab=$('.panel-tab[data-tab="innov"]');
+      if(innovTab){innovTab.click()}
+      setTimeout(()=>{const t2=$('#onboard-tip2');if(t2)t2.classList.add('show')},500);
     }
     function dismissStep2(){
       localStorage.setItem(OB_KEY,'1');
       const t2=$('#onboard-tip2');if(t2)t2.classList.remove('show');
+      const compTab=$('.panel-tab[data-tab="comp"]');
+      if(compTab){compTab.click()}
     }
     $('#ob-dismiss1').addEventListener('click',dismissStep1);
     $('#ob-dismiss2').addEventListener('click',dismissStep2);
-    $('#open-panel').addEventListener('click',()=>{
-      const t1=$('#onboard-tip1'),t2=$('#onboard-tip2');
-      if(t1&&t1.classList.contains('show')){dismissStep1()}
-      else if(t2&&t2.classList.contains('show')){dismissStep2()}
-    });
     showOnboard();
   </script>
 </body>
