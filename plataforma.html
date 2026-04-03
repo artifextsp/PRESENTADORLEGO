@@ -261,6 +261,25 @@
         <div class="pub-url" id="pub-url-text"></div>
         <div class="btn-row" style="margin-top:.8rem"><button class="btn btn-sm" id="pub-done">Cerrar</button></div>
       </div>
+      <!-- Step 5: Manual fallback -->
+      <div class="pub-step" id="pub-step-manual">
+        <h3>Publicar manualmente</h3>
+        <p style="font-size:.78rem;color:var(--text-dim);margin-bottom:.8rem">Tu navegador no puede conectar con la API de GitHub. Usa este método alternativo:</p>
+        <div class="btn-row" style="margin-bottom:.6rem"><button class="btn btn-primary btn-sm" id="pub-download-json">📥 Descargar JSON del proyecto</button></div>
+        <div class="pub-help">
+          <strong>Pasos:</strong><br>
+          1. Descarga el JSON con el botón de arriba<br>
+          2. Ve a tu repo en GitHub → Add file → Upload files<br>
+          3. Arrastra el .json descargado y haz commit<br>
+          4. El modelo GLB ya está en el repo ✅
+        </div>
+        <div style="margin-top:.8rem;text-align:center">
+          <p style="font-size:.72rem;color:var(--text-dim);margin-bottom:.4rem">QR para el visor:</p>
+          <div class="pub-qr"><img id="pub-qr-manual" alt="QR"></div>
+          <div class="pub-url" id="pub-url-manual"></div>
+        </div>
+        <div class="btn-row" style="margin-top:.8rem"><button class="btn btn-sm" id="pub-manual-done">Cerrar</button></div>
+      </div>
     </div></div>
   </div>
 
@@ -480,10 +499,25 @@
         $('#pub-qr-img').src=qrApi;$('#pub-url-text').textContent=viewerUrl;
         setPubStep('success');
       }catch(e){
-        console.error(e);
-        ['ps-glb','ps-upload-glb','ps-upload-json','ps-manifest'].forEach(id=>{const li=$('#'+id);if(li.className==='doing')setStepStatus(id,'fail')});
-        alert('Error: '+e.message);
+        console.error('Publish API error:',e);
+        showManualPublish(repo,slug,projName,modelPath);
       }
+    }
+
+    function showManualPublish(repo,slug,projName,modelPath){
+      const proj={version:3,name:projName,cloudinaryBase:$('#cloudinary-base').value,modelUrl:modelPath,components,labels,groups};
+      window._pendingPubJSON=JSON.stringify(proj,null,2);window._pendingPubSlug=slug;
+      const owner=repo.split('/')[0];const repoName=repo.split('/')[1];
+      const viewerUrl=`https://${owner}.github.io/${repoName}/`;
+      const qrApi=`https://api.qrserver.com/v1/create-qr-code/?size=200x200&color=3b82f6&bgcolor=ffffff&data=${encodeURIComponent(viewerUrl)}`;
+      $('#pub-qr-manual').src=qrApi;$('#pub-url-manual').textContent=viewerUrl;
+      setPubStep('manual');
+    }
+
+    function downloadPubJSON(){
+      if(!window._pendingPubJSON)return;
+      const blob=new Blob([window._pendingPubJSON],{type:'application/json'});
+      const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=(window._pendingPubSlug||'proyecto')+'.json';a.click();
     }
 
     // ─── Tabs & Present ───
@@ -515,6 +549,8 @@
     $('#pub-confirm-back').addEventListener('click',()=>setPubStep('config'));
     $('#pub-confirm-go').addEventListener('click',doPublish);
     $('#pub-done').addEventListener('click',()=>$('#publish-modal').classList.remove('open'));
+    $('#pub-manual-done').addEventListener('click',()=>$('#publish-modal').classList.remove('open'));
+    $('#pub-download-json').addEventListener('click',downloadPubJSON);
     $('#present-btn').addEventListener('click',togglePresent);
     $('#explode-slider').addEventListener('input',e=>{explodeAmount=parseInt(e.target.value)/100;$('#explode-pct').textContent=e.target.value+'%';applyExplode();$('#explode-toggle').classList.toggle('active',explodeAmount>0)});
     $('#explode-toggle').addEventListener('click',()=>{explodeActive=!explodeActive;animateExplodeTo(explodeActive?60:0)});

@@ -4,5 +4,11 @@
     "file": "mi-robot-fll.json",
     "icon": "🤖",
     "description": "Robot principal de competencia"
+  },
+  {
+    "name": "AXLEBEE",
+    "file": "axlebee.json",
+    "icon": "🤖",
+    "description": "Robot oficial FLL - LEMOTU"
   }
 ]
