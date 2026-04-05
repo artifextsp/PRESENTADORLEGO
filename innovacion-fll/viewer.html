@@ -32,6 +32,16 @@
     .load-drop .ld-text{font-size:.85rem;color:var(--text-dim);margin-bottom:.2rem}
     .load-drop .ld-hint{font-size:.65rem;color:var(--text-muted)}
     .load-badge{margin-top:1.5rem;font-size:.6rem;color:var(--text-muted)}
+    .load-or{margin:1.2rem 0 .8rem;font-size:.65rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.1em;font-weight:700}
+    .gallery-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:.7rem;width:min(90vw,500px);padding:0 .5rem}
+    .gallery-card{background:var(--bg-card);border:1.5px solid rgba(255,255,255,.06);border-radius:16px;overflow:hidden;cursor:pointer;transition:all .2s}
+    .gallery-card:hover{border-color:var(--accent);transform:translateY(-3px);box-shadow:0 8px 25px rgba(139,92,246,.15)}
+    .gallery-card:active{transform:scale(.97)}
+    .gallery-icon{height:70px;display:flex;align-items:center;justify-content:center;font-size:2.2rem;background:linear-gradient(135deg,rgba(139,92,246,.08),rgba(6,182,212,.08))}
+    .gallery-info{padding:.6rem .7rem}
+    .gallery-name{font-size:.75rem;font-weight:700;margin-bottom:.1rem}
+    .gallery-team{font-size:.6rem;color:var(--text-muted)}
+    .gallery-loading{font-size:.75rem;color:var(--text-muted);padding:1rem}
 
     /* ═══ VIEWER LAYOUT ═══ */
     #viewer{display:none;flex-direction:column;height:100dvh;width:100%}
@@ -56,15 +66,20 @@
     /* ─── Resource Buttons ─── */
     .v-res-strip{display:flex;gap:.4rem;padding:.5rem .8rem;overflow-x:auto;flex-shrink:0;scrollbar-width:none;-webkit-overflow-scrolling:touch}
     .v-res-strip::-webkit-scrollbar{display:none}
-    .v-res-btn{display:flex;align-items:center;gap:.35rem;padding:.55rem .85rem;border-radius:50px;border:2px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);color:var(--text-dim);font-size:.72rem;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0;transition:all .2s;min-height:44px}
-    .v-res-btn:active{transform:scale(.96)}
-    .v-res-btn .vr-icon{font-size:1.1rem}
-    .v-res-btn.active{color:#fff}
-    .v-res-btn.active.video{background:rgba(239,68,68,.2);border-color:var(--video-color);color:var(--video-color)}
-    .v-res-btn.active.audio{background:rgba(139,92,246,.2);border-color:var(--audio-color);color:var(--audio-color)}
-    .v-res-btn.active.image{background:rgba(6,182,212,.2);border-color:var(--image-color);color:var(--image-color)}
-    .v-res-btn.active.link{background:rgba(59,130,246,.2);border-color:var(--link-color);color:var(--link-color)}
-    .v-res-btn.active.document{background:rgba(245,158,11,.2);border-color:var(--doc-color);color:var(--doc-color)}
+    .v-res-btn{display:flex;align-items:center;gap:.4rem;padding:.6rem 1rem;border-radius:50px;border:none;background:#f59e0b;color:#111;font-size:.75rem;font-weight:800;cursor:pointer;white-space:nowrap;flex-shrink:0;transition:all .2s;min-height:48px;box-shadow:0 3px 12px rgba(245,158,11,.35)}
+    .v-res-btn:active{transform:scale(.95)}
+    .v-res-btn .vr-icon{font-size:1.2rem}
+    .v-res-btn.active{background:#fbbf24;box-shadow:0 4px 18px rgba(251,191,36,.5);transform:scale(1.04)}
+    .v-res-btn.video{background:#ef4444;color:#fff;box-shadow:0 3px 12px rgba(239,68,68,.4)}
+    .v-res-btn.video.active{background:#f87171;box-shadow:0 4px 18px rgba(248,113,113,.5)}
+    .v-res-btn.audio{background:#a855f7;color:#fff;box-shadow:0 3px 12px rgba(168,85,247,.4)}
+    .v-res-btn.audio.active{background:#c084fc;box-shadow:0 4px 18px rgba(192,132,252,.5)}
+    .v-res-btn.image{background:#06b6d4;color:#fff;box-shadow:0 3px 12px rgba(6,182,212,.4)}
+    .v-res-btn.image.active{background:#22d3ee;box-shadow:0 4px 18px rgba(34,211,238,.5)}
+    .v-res-btn.link{background:#3b82f6;color:#fff;box-shadow:0 3px 12px rgba(59,130,246,.4)}
+    .v-res-btn.link.active{background:#60a5fa;box-shadow:0 4px 18px rgba(96,165,250,.5)}
+    .v-res-btn.document{background:#f59e0b;color:#111;box-shadow:0 3px 12px rgba(245,158,11,.4)}
+    .v-res-btn.document.active{background:#fbbf24;box-shadow:0 4px 18px rgba(251,191,36,.5)}
 
     /* ─── Media Display ─── */
     .v-media{flex:1;display:flex;align-items:center;justify-content:center;padding:.5rem;min-height:200px;position:relative}
@@ -83,13 +98,14 @@
 
     /* ─── Navigation ─── */
     .v-nav{display:flex;align-items:center;gap:.4rem;padding:.5rem .6rem;background:var(--bg-card);border-top:1px solid rgba(255,255,255,.06);flex-shrink:0}
-    .v-nav-btn{flex:1;padding:.7rem;border-radius:12px;border:none;font-size:.82rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:.3rem;transition:all .15s;min-height:48px}
-    .v-nav-btn:active{transform:scale(.97)}
-    .v-nav-btn.prev,.v-nav-btn.next{background:rgba(139,92,246,.12);color:var(--accent)}
-    .v-nav-btn.prev:hover,.v-nav-btn.next:hover{background:rgba(139,92,246,.2)}
-    .v-nav-btn:disabled{opacity:.25;cursor:default}
-    .v-nav-btn.index{background:rgba(255,255,255,.06);color:var(--text-dim);flex:.6}
-    .v-nav-btn.index:hover{background:rgba(255,255,255,.1)}
+    .v-nav-btn{flex:1;padding:.75rem;border-radius:14px;border:none;font-size:.85rem;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:.3rem;transition:all .15s;min-height:52px}
+    .v-nav-btn:active{transform:scale(.96)}
+    .v-nav-btn.prev{background:var(--accent);color:#fff;box-shadow:0 3px 12px rgba(139,92,246,.3)}
+    .v-nav-btn.next{background:var(--accent);color:#fff;box-shadow:0 3px 12px rgba(139,92,246,.3)}
+    .v-nav-btn.prev:hover,.v-nav-btn.next:hover{opacity:.9}
+    .v-nav-btn:disabled{opacity:.2;cursor:default;box-shadow:none}
+    .v-nav-btn.index{background:rgba(255,255,255,.1);color:var(--text);flex:.5}
+    .v-nav-btn.index:hover{background:rgba(255,255,255,.15)}
 
     /* ─── Index Modal ─── */
     .idx-bg{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.75);backdrop-filter:blur(8px);display:flex;align-items:flex-end;justify-content:center;opacity:0;visibility:hidden;transition:all .3s}
@@ -125,6 +141,10 @@
   <div id="load-screen">
     <div class="load-logo">AURORA NOVA</div>
     <div class="load-sub">Visor de Presentación Interactiva</div>
+    <div id="gallery-section" style="display:none">
+      <div class="gallery-grid" id="gallery-grid"></div>
+    </div>
+    <div class="load-or" id="load-or">o carga desde tu dispositivo</div>
     <div class="load-drop" id="load-drop">
       <div class="ld-icon">📂</div>
       <div class="ld-text">Toca para cargar el proyecto</div>
@@ -234,7 +254,7 @@
       strip.innerHTML = '';
       s.resources.forEach((r, i) => {
         const btn = document.createElement('button');
-        btn.className = 'v-res-btn' + (i === activeRes ? ` active ${r.type}` : '');
+        btn.className = 'v-res-btn ' + r.type + (i === activeRes ? ' active' : '');
         btn.innerHTML = `<span class="vr-icon">${RES_ICONS[r.type]||'📎'}</span>${r.label}`;
         btn.addEventListener('click', () => activateResource(i));
         strip.appendChild(btn);
@@ -434,7 +454,32 @@
       else if(e.key === 'Escape') closeIndex();
     });
 
-    // ─── Auto-load from URL parameter ───
+    // ─── Galería de proyectos (carga automática desde el repo) ───
+    async function loadGallery(){
+      try{
+        const res = await fetch('nova-projects.json');
+        if(!res.ok) return;
+        const projects = await res.json();
+        if(!projects.length) return;
+        const grid = $('#gallery-grid');
+        grid.innerHTML = '';
+        projects.forEach(p => {
+          const card = document.createElement('div');
+          card.className = 'gallery-card';
+          card.innerHTML = `<div class="gallery-icon">${p.icon||'💡'}</div><div class="gallery-info"><div class="gallery-name">${p.name||''}</div><div class="gallery-team">${p.team||''}</div></div>`;
+          card.addEventListener('click', () => {
+            fetch(p.file)
+              .then(r => { if(!r.ok) throw new Error('404'); return r.text() })
+              .then(loadJSON)
+              .catch(() => alert('No se pudo cargar: ' + p.file));
+          });
+          grid.appendChild(card);
+        });
+        $('#gallery-section').style.display = '';
+      }catch(e){ console.log('No gallery manifest found') }
+    }
+
+    // ─── Auto-load from URL parameter or gallery ───
     const params = new URLSearchParams(window.location.search);
     const projectFile = params.get('project');
     if(projectFile){
@@ -443,8 +488,10 @@
         .then(loadJSON)
         .catch(e => {
           console.error('Error loading project:', e);
-          // Mostrar pantalla de carga manual
+          loadGallery();
         });
+    } else {
+      loadGallery();
     }
   </script>
 </body>
