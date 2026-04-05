@@ -100,6 +100,16 @@
     .ed-textarea{width:100%;padding:.6rem .8rem;border-radius:10px;border:1px solid rgba(255,255,255,.08);background:var(--bg-input);color:var(--text);font-size:.85rem;min-height:80px;resize:vertical;line-height:1.5}
     .ed-textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(139,92,246,.15)}
 
+    .ed-toolbar{display:flex;gap:.3rem;margin-bottom:.3rem}
+    .ed-toolbar button{padding:.3rem .65rem;border-radius:7px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:var(--text-dim);font-size:.75rem;font-weight:700;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:.25rem;line-height:1}
+    .ed-toolbar button:hover{background:rgba(255,255,255,.1);color:var(--text)}
+    .ed-toolbar button.active{background:rgba(139,92,246,.2);border-color:var(--accent);color:var(--accent)}
+    .ed-richtext{width:100%;padding:.6rem .8rem;border-radius:10px;border:1px solid rgba(255,255,255,.08);background:var(--bg-input);color:var(--text);font-size:.85rem;min-height:80px;line-height:1.6;outline:none;overflow-y:auto;max-height:300px}
+    .ed-richtext:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(139,92,246,.15)}
+    .ed-richtext b,.ed-richtext strong{font-weight:800;color:#fff}
+    .ed-richtext mark{background:rgba(251,191,36,.35);color:#fbbf24;border-radius:3px;padding:0 2px}
+    .ed-richtext:empty::before{content:attr(data-placeholder);color:var(--text-muted);pointer-events:none}
+
     /* ─── Resources ─── */
     .res-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem}
     .res-list{display:flex;flex-direction:column;gap:.4rem}
@@ -162,6 +172,8 @@
     .preview-slide{max-width:600px;margin:0 auto;text-align:center}
     .preview-slide h2{font-size:1.3rem;font-weight:800;margin-bottom:.3rem}
     .preview-slide p{font-size:.85rem;color:var(--text-dim);margin-bottom:1rem;line-height:1.5}
+    .preview-slide p b,.preview-slide p strong{font-weight:800;color:#f1f5f9}
+    .preview-slide p mark{background:rgba(251,191,36,.3);color:#fbbf24;border-radius:3px;padding:0 2px}
     .preview-res-list{display:flex;flex-wrap:wrap;gap:.4rem;justify-content:center;margin-bottom:1rem}
     .preview-res-btn{padding:.5rem 1rem;border-radius:50px;border:none;font-size:.75rem;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:.3rem;transition:all .15s}
     .preview-content{width:100%;min-height:200px;border-radius:12px;overflow:hidden;background:var(--bg-card);display:flex;align-items:center;justify-content:center}
@@ -238,7 +250,11 @@
           </div>
           <div class="ed-section">
             <div class="ed-label">Descripción</div>
-            <textarea class="ed-textarea" id="ed-desc" placeholder="Breve descripción de lo que se presenta en este slide..."></textarea>
+            <div class="ed-toolbar">
+              <button id="fmt-bold" title="Negrita (Ctrl+B)"><b>N</b> Negrita</button>
+              <button id="fmt-highlight" title="Resaltar texto">✦ Resaltar</button>
+            </div>
+            <div class="ed-richtext" id="ed-desc" contenteditable="true" data-placeholder="Breve descripción de lo que se presenta en este slide..."></div>
           </div>
           <div class="ed-section">
             <div class="res-header">
@@ -472,7 +488,7 @@
       $('#slide-editor').style.display = '';
       const s = project.slides[activeSlideIdx];
       $('#ed-title').value = s.title;
-      $('#ed-desc').value = s.description;
+      $('#ed-desc').innerHTML = s.description;
       renderResources();
     }
 
@@ -562,7 +578,7 @@
       if(activeSlideIdx >= 0 && activeSlideIdx < project.slides.length){
         const s = project.slides[activeSlideIdx];
         s.title = $('#ed-title').value;
-        s.description = $('#ed-desc').value;
+        s.description = $('#ed-desc').innerHTML;
       }
       project.project.name = $('#proj-name').value;
       project.project.team = $('#proj-team').value;
@@ -731,6 +747,41 @@
       }
     });
     $('#ed-desc').addEventListener('input', () => { autoSave() });
+
+    // Formato de texto: Negrita
+    $('#fmt-bold').addEventListener('click', () => {
+      document.execCommand('bold');
+      $('#ed-desc').focus();
+      autoSave();
+    });
+
+    // Formato de texto: Resaltar
+    $('#fmt-highlight').addEventListener('click', () => {
+      const sel = window.getSelection();
+      if(!sel.rangeCount || sel.isCollapsed) return;
+      const range = sel.getRangeAt(0);
+      const parent = sel.anchorNode.parentElement;
+      if(parent && parent.tagName === 'MARK'){
+        const text = document.createTextNode(parent.textContent);
+        parent.parentNode.replaceChild(text, parent);
+      } else {
+        const mark = document.createElement('mark');
+        range.surroundContents(mark);
+      }
+      $('#ed-desc').focus();
+      autoSave();
+    });
+
+    // Atajos de teclado dentro del editor de descripción
+    $('#ed-desc').addEventListener('keydown', e => {
+      if(e.ctrlKey || e.metaKey){
+        if(e.key === 'b' || e.key === 'B'){
+          e.preventDefault();
+          document.execCommand('bold');
+          autoSave();
+        }
+      }
+    });
 
     // Add slide
     $('#add-slide-btn').addEventListener('click', addSlide);
