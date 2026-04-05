@@ -59,37 +59,37 @@
     .v-content::-webkit-scrollbar{width:3px}
     .v-content::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:2px}
 
-    .v-slide-header{padding:1rem 1rem .5rem;text-align:center;flex-shrink:0}
-    .v-slide-title{font-size:1.2rem;font-weight:800;margin-bottom:.3rem;line-height:1.3}
-    .v-slide-desc{font-size:.82rem;color:var(--text-dim);line-height:1.5;max-width:500px;margin:0 auto}
+    .v-slide-header{padding:1rem 1rem .6rem;flex-shrink:0}
+    .v-slide-title{font-size:1.15rem;font-weight:800;margin-bottom:.4rem;line-height:1.3;text-align:center}
+    .v-slide-desc{font-size:.82rem;color:var(--text-dim);line-height:1.6;text-align:justify;hyphens:auto}
 
-    /* ─── Resource Buttons ─── */
-    .v-res-strip{display:flex;gap:.4rem;padding:.5rem .8rem;overflow-x:auto;flex-shrink:0;scrollbar-width:none;-webkit-overflow-scrolling:touch}
-    .v-res-strip::-webkit-scrollbar{display:none}
-    .v-res-btn{display:flex;align-items:center;gap:.4rem;padding:.6rem 1rem;border-radius:50px;border:none;background:#f59e0b;color:#111;font-size:.75rem;font-weight:800;cursor:pointer;white-space:nowrap;flex-shrink:0;transition:all .2s;min-height:48px;box-shadow:0 3px 12px rgba(245,158,11,.35)}
-    .v-res-btn:active{transform:scale(.95)}
-    .v-res-btn .vr-icon{font-size:1.2rem}
-    .v-res-btn.active{background:#fbbf24;box-shadow:0 4px 18px rgba(251,191,36,.5);transform:scale(1.04)}
-    .v-res-btn.video{background:#ef4444;color:#fff;box-shadow:0 3px 12px rgba(239,68,68,.4)}
-    .v-res-btn.video.active{background:#f87171;box-shadow:0 4px 18px rgba(248,113,113,.5)}
-    .v-res-btn.audio{background:#a855f7;color:#fff;box-shadow:0 3px 12px rgba(168,85,247,.4)}
-    .v-res-btn.audio.active{background:#c084fc;box-shadow:0 4px 18px rgba(192,132,252,.5)}
-    .v-res-btn.image{background:#06b6d4;color:#fff;box-shadow:0 3px 12px rgba(6,182,212,.4)}
-    .v-res-btn.image.active{background:#22d3ee;box-shadow:0 4px 18px rgba(34,211,238,.5)}
-    .v-res-btn.link{background:#3b82f6;color:#fff;box-shadow:0 3px 12px rgba(59,130,246,.4)}
-    .v-res-btn.link.active{background:#60a5fa;box-shadow:0 4px 18px rgba(96,165,250,.5)}
-    .v-res-btn.document{background:#f59e0b;color:#111;box-shadow:0 3px 12px rgba(245,158,11,.4)}
-    .v-res-btn.document.active{background:#fbbf24;box-shadow:0 4px 18px rgba(251,191,36,.5)}
+    /* ─── Resource List (vertical, full width) ─── */
+    .v-res-list{display:flex;flex-direction:column;gap:.45rem;padding:.3rem .8rem .8rem}
+    .v-res-btn{display:flex;align-items:center;gap:.6rem;padding:.7rem 1rem;border-radius:14px;border:none;font-size:.8rem;font-weight:700;cursor:pointer;transition:all .15s;min-height:52px;width:100%}
+    .v-res-btn:active{transform:scale(.98)}
+    .v-res-btn .vr-icon{font-size:1.3rem;flex-shrink:0}
+    .v-res-btn .vr-label{flex:1;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .v-res-btn .vr-arrow{font-size:.8rem;opacity:.6;flex-shrink:0}
+    .v-res-btn.video{background:#ef4444;color:#fff;box-shadow:0 3px 12px rgba(239,68,68,.35)}
+    .v-res-btn.audio{background:#a855f7;color:#fff;box-shadow:0 3px 12px rgba(168,85,247,.35)}
+    .v-res-btn.image{background:#06b6d4;color:#fff;box-shadow:0 3px 12px rgba(6,182,212,.35)}
+    .v-res-btn.link{background:#3b82f6;color:#fff;box-shadow:0 3px 12px rgba(59,130,246,.35)}
+    .v-res-btn.document{background:#f59e0b;color:#111;box-shadow:0 3px 12px rgba(245,158,11,.35)}
+    .v-res-empty{text-align:center;padding:1.5rem .8rem;color:var(--text-muted);font-size:.8rem}
 
-    /* ─── Media Display ─── */
-    .v-media{flex:1;display:flex;align-items:center;justify-content:center;padding:.5rem;min-height:200px;position:relative}
+    /* ─── Active Media View ─── */
+    .v-media-view{display:none;flex-direction:column;flex:1;min-height:0}
+    .v-media-view.open{display:flex}
+    .v-media-bar{display:flex;align-items:center;gap:.5rem;padding:.5rem .8rem;flex-shrink:0}
+    .v-media-bar .vm-label{flex:1;font-size:.78rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .v-media-close{padding:.5rem 1rem;border-radius:10px;border:none;background:#ef4444;color:#fff;font-size:.78rem;font-weight:800;cursor:pointer;min-height:40px;display:flex;align-items:center;gap:.3rem;box-shadow:0 2px 10px rgba(239,68,68,.3)}
+    .v-media-close:active{transform:scale(.96)}
+    .v-media-area{flex:1;display:flex;align-items:center;justify-content:center;padding:.4rem;overflow:auto}
     .v-media-inner{width:100%;max-width:700px;border-radius:14px;overflow:hidden;background:var(--bg-card);position:relative}
     .v-media-inner iframe{width:100%;aspect-ratio:16/9;border:none;display:block}
     .v-media-inner video{width:100%;aspect-ratio:16/9;object-fit:contain;display:block;background:#000}
     .v-media-inner audio{width:100%;padding:1.5rem}
     .v-media-inner img{width:100%;max-height:55vh;object-fit:contain;display:block}
-    .v-media-placeholder{padding:2rem;text-align:center;color:var(--text-muted);font-size:.82rem}
-    .v-media-placeholder .mp-icon{font-size:2.5rem;margin-bottom:.5rem;opacity:.3}
     .v-media-error{padding:1.5rem;text-align:center;color:var(--danger);font-size:.78rem}
     .v-media-loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(8,13,26,.8);z-index:2;transition:opacity .3s}
     .v-media-loading.hidden{opacity:0;pointer-events:none}
@@ -129,10 +129,11 @@
     .v-team{padding:.3rem .8rem;background:rgba(139,92,246,.06);border-bottom:1px solid rgba(139,92,246,.1);text-align:center;font-size:.65rem;font-weight:600;color:var(--accent);letter-spacing:.03em;flex-shrink:0}
 
     @media(min-width:700px){
+      .v-slide-header{max-width:600px;margin:0 auto}
       .v-slide-title{font-size:1.5rem}
       .v-slide-desc{font-size:.9rem}
       .v-nav{padding:.5rem 1.5rem;gap:.6rem}
-      .v-res-strip{justify-content:center;padding:.6rem 1rem}
+      .v-res-list{max-width:500px;margin:0 auto}
     }
   </style>
 </head>
@@ -165,13 +166,19 @@
     </div>
     <div class="v-team" id="v-team" style="display:none"></div>
 
-    <div class="v-content">
+    <div class="v-content" id="v-content">
       <div class="v-slide-header">
         <h1 class="v-slide-title" id="v-title"></h1>
         <p class="v-slide-desc" id="v-desc"></p>
       </div>
-      <div class="v-res-strip" id="v-res-strip"></div>
-      <div class="v-media">
+      <div class="v-res-list" id="v-res-list"></div>
+    </div>
+    <div class="v-media-view" id="v-media-view">
+      <div class="v-media-bar">
+        <span class="vm-label" id="vm-label"></span>
+        <button class="v-media-close" id="v-media-close">✕ Cerrar</button>
+      </div>
+      <div class="v-media-area">
         <div class="v-media-inner" id="v-media"></div>
       </div>
     </div>
@@ -249,41 +256,48 @@
       $('#v-prev').disabled = currentSlide === 0;
       $('#v-next').disabled = currentSlide === slides.length - 1;
 
-      // Resource buttons
-      const strip = $('#v-res-strip');
-      strip.innerHTML = '';
+      // Cerrar media view, mostrar contenido
+      closeMediaView();
+
+      // Resource buttons (vertical list)
+      const list = $('#v-res-list');
+      list.innerHTML = '';
+      if(!s.resources.length){
+        list.innerHTML = '<div class="v-res-empty">Este slide no tiene recursos multimedia</div>';
+        return;
+      }
       s.resources.forEach((r, i) => {
         const btn = document.createElement('button');
-        btn.className = 'v-res-btn ' + r.type + (i === activeRes ? ' active' : '');
-        btn.innerHTML = `<span class="vr-icon">${RES_ICONS[r.type]||'📎'}</span>${r.label}`;
+        btn.className = 'v-res-btn ' + r.type;
+        btn.innerHTML = `<span class="vr-icon">${RES_ICONS[r.type]||'📎'}</span><span class="vr-label">${r.label}</span><span class="vr-arrow">▶</span>`;
         btn.addEventListener('click', () => activateResource(i));
-        strip.appendChild(btn);
+        list.appendChild(btn);
       });
-
-      // Media area
-      if(activeRes >= 0 && s.resources[activeRes]){
-        renderMedia(s.resources[activeRes]);
-      } else if(s.resources.length === 1){
-        activeRes = 0;
-        renderSlide();
-        return;
-      } else if(s.resources.length > 0){
-        $('#v-media').innerHTML = `<div class="v-media-placeholder"><div class="mp-icon">👆</div>Selecciona un recurso de arriba</div>`;
-      } else {
-        $('#v-media').innerHTML = `<div class="v-media-placeholder"><div class="mp-icon">📋</div>Este slide no tiene recursos multimedia</div>`;
-      }
     }
 
     function activateResource(i){
-      // Limpiar medios previos
+      const s = slides[currentSlide];
+      if(!s || !s.resources[i]) return;
       cleanupMedia();
       activeRes = i;
-      renderSlide();
+      const r = s.resources[i];
+      $('#vm-label').textContent = r.label;
+      $('#v-content').style.display = 'none';
+      $('#v-media-view').classList.add('open');
+      renderMedia(r);
+    }
+
+    function closeMediaView(){
+      cleanupMedia();
+      activeRes = -1;
+      $('#v-media-view').classList.remove('open');
+      $('#v-content').style.display = '';
     }
 
     function cleanupMedia(){
       const media = $('#v-media');
       media.querySelectorAll('video,audio').forEach(el => { el.pause(); el.src = '' });
+      media.innerHTML = '';
     }
 
     // ─── Renderizar medio activo ───
@@ -439,6 +453,9 @@
       reader.onload = e => loadJSON(e.target.result);
       reader.readAsText(file);
     }
+
+    // Media close
+    $('#v-media-close').addEventListener('click', () => { closeMediaView(); renderSlide() });
 
     // Navigation
     $('#v-prev').addEventListener('click', () => goSlide(currentSlide - 1));
