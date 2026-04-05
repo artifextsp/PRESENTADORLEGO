@@ -124,21 +124,14 @@
     .innov-num{width:26px;height:26px;border-radius:50%;background:var(--hotspot);color:#111;font-weight:800;font-size:.72rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 2px 8px rgba(245,158,11,.3)}
     .innov-name{color:var(--text);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
-    #desc-popup{position:fixed;z-index:60;background:var(--bg-modal);border:1px solid rgba(6,182,212,.3);border-radius:12px;padding:.7rem .9rem;max-width:260px;min-width:140px;display:none;box-shadow:0 8px 30px rgba(0,0,0,.6),0 0 15px rgba(6,182,212,.1)}
+    #desc-popup{position:fixed;z-index:60;background:var(--bg-modal);border:1px solid rgba(6,182,212,.3);border-radius:12px;padding:.7rem .9rem;max-width:280px;min-width:140px;display:none;box-shadow:0 8px 30px rgba(0,0,0,.6),0 0 15px rgba(6,182,212,.1)}
     #desc-popup.show{display:block}
     #desc-popup .dp-title{font-size:.78rem;font-weight:700;margin-bottom:.25rem;color:var(--label-color)}
     #desc-popup .dp-text{font-size:.72rem;color:var(--text-dim);line-height:1.45}
     #desc-popup .dp-close{position:absolute;top:5px;right:7px;width:18px;height:18px;border:none;background:none;color:var(--text-dim);font-size:.8rem;cursor:pointer;display:flex;align-items:center;justify-content:center}
-
-    #explode-panel{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);display:none;align-items:center;gap:.5rem;background:var(--bg-card);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:.4rem .7rem;z-index:8;box-shadow:0 8px 30px rgba(0,0,0,.5);flex-wrap:wrap;justify-content:center}
-    #explode-panel.visible{display:flex}
-    #explode-panel label{font-size:.68rem;font-weight:600;color:var(--text-dim);white-space:nowrap}
-    #explode-slider{width:110px;height:5px;-webkit-appearance:none;background:rgba(255,255,255,.1);border-radius:3px;outline:none;cursor:pointer}
-    #explode-slider::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;background:var(--accent);border-radius:50%;border:2px solid var(--bg-card);cursor:grab}
-    #explode-pct{font-size:.68rem;font-weight:700;color:var(--accent);min-width:26px;text-align:right}
-    .explode-btn{padding:.3rem .6rem;border-radius:50px;border:1px solid rgba(59,130,246,.3);background:rgba(59,130,246,.15);color:var(--accent);font-size:.65rem;font-weight:700;font-family:inherit;cursor:pointer;white-space:nowrap}
-    .explode-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
-    #explode-group-sel{padding:.25rem .4rem;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:var(--bg-input);color:var(--text);font-family:inherit;font-size:.65rem;max-width:110px}
+    #desc-popup .dp-media-btn{display:none;align-items:center;gap:.3rem;margin-top:.4rem;padding:.3rem .6rem;border-radius:8px;border:1px solid rgba(6,182,212,.3);background:rgba(6,182,212,.12);color:var(--label-color);font-size:.68rem;font-weight:700;cursor:pointer;font-family:inherit;transition:background .2s}
+    #desc-popup .dp-media-btn:hover{background:rgba(6,182,212,.25)}
+    #desc-popup .dp-media-btn.visible{display:inline-flex}
 
     #modal-overlay{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.75);backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;opacity:0;visibility:hidden;transition:opacity .35s,visibility .35s}
     #modal-overlay.open{opacity:1;visibility:visible}
@@ -224,18 +217,11 @@
         <canvas id="canvas"></canvas>
         <div id="hotspot-layer"></div>
         <div id="innov-panel"><div class="innov-header" id="innov-toggle-btn"><span class="innov-title">Innovaciones</span><span class="innov-toggle">▼</span></div><div class="innov-list" id="innov-list"></div></div>
-        <div id="explode-panel">
-          <button class="explode-btn" id="explode-toggle">Despiece</button>
-          <select id="explode-group-sel"><option value="">Todos</option></select>
-          <label>Separación</label>
-          <input type="range" id="explode-slider" min="0" max="100" value="0">
-          <span id="explode-pct">0%</span>
-        </div>
         <div class="loading-overlay" id="loading-3d"><div class="load-spinner"></div><span class="load-text" id="load-text">Cargando...</span></div>
       </div>
     </div>
 
-    <div id="desc-popup"><button class="dp-close">×</button><div class="dp-title"></div><div class="dp-text"></div></div>
+    <div id="desc-popup"><button class="dp-close">×</button><div class="dp-title"></div><div class="dp-text"></div><button class="dp-media-btn" id="dp-media-btn">▶ Ver video</button></div>
     <div id="modal-overlay">
       <div class="modal-card">
         <div class="modal-header"><div class="modal-header-left"><span class="modal-number" id="modal-num"></span><span class="modal-title" id="modal-title"></span></div><button class="modal-close" id="modal-close">×</button></div>
@@ -260,8 +246,7 @@
 
     let model=null;
     let components=[], labels=[], groups=[], cloudinaryBase='';
-    let overlayEls=[], overlayPos=[], overlayItems=[], overlayMeshMap=[];
-    let explodeParts=[], explodeAmount=0, explodeActive=false, explodeGroup='';
+    let overlayEls=[], overlayPos=[], overlayItems=[];
     let threeReady=false;
 
     // ─── Three.js (lazy init) ───
@@ -286,7 +271,7 @@
     }
 
     function parseVec3(s){const p=s.trim().split(/\s+/).map(Number);return new THREE.Vector3(p[0],p[1],p[2])}
-    function clearModel(){if(model&&scene){scene.remove(model);model=null}explodeParts=[];overlayMeshMap=[];const ep=$('#explode-panel');if(ep)ep.classList.remove('visible')}
+    function clearModel(){if(model&&scene){scene.remove(model);model=null}}
     function centerAndScale(o){const b=new THREE.Box3().setFromObject(o),c=b.getCenter(new THREE.Vector3()),sz=b.getSize(new THREE.Vector3()),m=Math.max(sz.x,sz.y,sz.z);if(!m)return;const s=0.6/m;o.position.sub(c.multiplyScalar(s));o.scale.multiplyScalar(s);const nb=new THREE.Box3().setFromObject(o),nc=nb.getCenter(new THREE.Vector3());controls.target.copy(nc);camera.position.set(nc.x,nc.y+0.36,nc.z+1.08)}
 
     async function loadModelFromUrl(url){
@@ -300,42 +285,9 @@
         }else if(url.match(/\.dae$/i)){
           model=await new Promise((res,rej)=>new ColladaLoader().load(url,c=>res(c.scene),null,rej));
         }
-        if(model){scene.add(model);centerAndScale(model);setupExplode();rebuildOverlays()}
+        if(model){scene.add(model);centerAndScale(model);rebuildOverlays()}
       }catch(e){console.error('Error cargando modelo:',e)}
       $('#loading-3d').classList.remove('visible');
-    }
-
-    // ─── Explode ───
-    function setupExplode(){
-      if(!model)return;let meshes=[];model.traverse(c=>{if(c.isMesh)meshes.push(c)});
-      if(meshes.length===1&&meshes[0].geometry?.groups?.length>1){
-        const src=meshes[0],g=src.geometry.groups,sg=src.geometry,par=src.parent||model,pos=sg.attributes.position,norm=sg.attributes.normal,idx=sg.index;meshes=[];
-        g.forEach(gr=>{const ids=[];for(let i=gr.start;i<gr.start+gr.count;i++)ids.push(idx?idx.getX(i):i);
-        const uq=[...new Set(ids)],m2n=new Map();uq.forEach((o,n)=>m2n.set(o,n));
-        const np=new Float32Array(uq.length*3),nn=norm?new Float32Array(uq.length*3):null;
-        uq.forEach((o,n)=>{np[n*3]=pos.getX(o);np[n*3+1]=pos.getY(o);np[n*3+2]=pos.getZ(o);if(norm){nn[n*3]=norm.getX(o);nn[n*3+1]=norm.getY(o);nn[n*3+2]=norm.getZ(o)}});
-        const ng=new THREE.BufferGeometry();ng.setAttribute('position',new THREE.Float32BufferAttribute(np,3));if(nn)ng.setAttribute('normal',new THREE.Float32BufferAttribute(nn,3));ng.setIndex(ids.map(i=>m2n.get(i)));
-        const mt=Array.isArray(src.material)?src.material[gr.materialIndex]:src.material.clone();
-        const nm=new THREE.Mesh(ng,mt);nm.position.copy(src.position);nm.rotation.copy(src.rotation);nm.scale.copy(src.scale);par.add(nm);meshes.push(nm)});par.remove(src);
-      }
-      if(meshes.length<2)return;
-      const ob=new THREE.Box3();meshes.forEach(m=>{m.geometry.computeBoundingBox();if(m.geometry.boundingBox)ob.union(m.geometry.boundingBox)});
-      const oc=ob.getCenter(new THREE.Vector3()),os=ob.getSize(new THREE.Vector3()),md=Math.max(os.x,os.y,os.z);
-      explodeParts=meshes.map(mesh=>{mesh.geometry.computeBoundingBox();const mc=mesh.geometry.boundingBox.getCenter(new THREE.Vector3()),dir=new THREE.Vector3().subVectors(mc,oc);if(dir.length()<md*0.01)dir.set(Math.random()-0.5,Math.random()-0.5,Math.random()-0.5);dir.normalize();return{mesh,originalPos:mesh.position.clone(),direction:dir,distance:md*0.4}});
-      $('#explode-panel').classList.add('visible');updateExplodeGroupSelect();mapOverlaysToMeshes();
-    }
-    function getActivePartIndices(){
-      if(!explodeGroup)return new Set(explodeParts.map((_,i)=>i));
-      const indices=new Set();overlayItems.forEach((oi,i)=>{if(oi.item.group===explodeGroup&&overlayMeshMap[i]>=0)indices.add(overlayMeshMap[i])});return indices;
-    }
-    function applyExplode(){if(!explodeParts.length)return;const active=getActivePartIndices();explodeParts.forEach(({mesh,originalPos,direction,distance},i)=>{if(active.has(i))mesh.position.copy(originalPos).addScaledVector(direction,distance*explodeAmount);else mesh.position.copy(originalPos)})}
-    function animateExplodeTo(t){const sl=$('#explode-slider'),st=parseInt(sl.value),t0=performance.now();(function step(now){const p=Math.min((now-t0)/600,1),e=p<0.5?4*p*p*p:1-Math.pow(-2*p+2,3)/2,c=Math.round(st+(t-st)*e);sl.value=c;$('#explode-pct').textContent=c+'%';explodeAmount=c/100;applyExplode();$('#explode-toggle').classList.toggle('active',c>0);if(p<1)requestAnimationFrame(step)})(performance.now())}
-    function updateExplodeGroupSelect(){const sel=$('#explode-group-sel'),cur=sel.value;sel.innerHTML='<option value="">Todos</option>';groups.forEach(g=>{const o=document.createElement('option');o.value=g.id;o.textContent=g.nombre;sel.appendChild(o)});sel.value=cur}
-    function mapOverlaysToMeshes(){
-      overlayMeshMap=[];if(!explodeParts.length||!overlayPos.length){overlayPos.forEach(()=>overlayMeshMap.push(-1));return}
-      const saved=explodeParts.map(p=>p.mesh.position.clone());explodeParts.forEach(p=>p.mesh.position.copy(p.originalPos));if(model)model.updateMatrixWorld(true);
-      overlayPos.forEach(wp=>{let minD=Infinity,best=-1;explodeParts.forEach((part,pi)=>{const c=new THREE.Vector3();part.mesh.geometry.computeBoundingBox();part.mesh.geometry.boundingBox.getCenter(c);part.mesh.localToWorld(c);const d=wp.distanceTo(c);if(d<minD){minD=d;best=pi}});overlayMeshMap.push(best)});
-      explodeParts.forEach((p,i)=>p.mesh.position.copy(saved[i]));if(model)model.updateMatrixWorld(true);
     }
 
     // ─── Overlays ───
@@ -348,30 +300,51 @@
         btn.addEventListener('click',e=>{e.stopPropagation();showDescPopup(l,e.clientX,e.clientY)});
         layer.appendChild(btn);overlayEls.push(btn);
       });
-      mapOverlaysToMeshes();rebuildInnovationsPanel();renderGroupPanel();
+      rebuildInnovationsPanel();renderGroupPanel();
     }
     function rebuildInnovationsPanel(){
       const panel=$('#innov-panel'),list=$('#innov-list');list.innerHTML='';
       if(!components.length){panel.classList.remove('visible');return}
       panel.classList.add('visible');
-      components.forEach((c,i)=>{const row=document.createElement('div');row.className='innov-item';row.innerHTML=`<span class="innov-num">${i+1}</span><span class="innov-name">${c.nombre}</span>`;row.addEventListener('click',()=>{if(c.video)openVideoModal(i)});list.appendChild(row)});
+      components.forEach((c,i)=>{const row=document.createElement('div');row.className='innov-item';row.innerHTML=`<span class="innov-num">${i+1}</span><span class="innov-name">${c.nombre}</span>`;row.addEventListener('click',()=>{if(c.video)openMediaModal(c,i+1)});list.appendChild(row)});
       renderInnovSidebar();
     }
     function renderInnovSidebar(){
       const list=$('#innov-sidebar-list');if(!list)return;list.innerHTML='';
       if(!components.length){list.innerHTML='<div class="innov-sidebar-empty">No hay innovaciones en este proyecto</div>';return}
-      components.forEach((c,i)=>{const row=document.createElement('div');row.className='innov-sidebar-item';row.innerHTML=`<span class="innov-s-num">${i+1}</span><div class="innov-s-info"><div class="innov-s-name">${c.nombre}</div><div class="innov-s-desc">${c.descripcion||''}</div></div>`;row.addEventListener('click',()=>{if(c.video)openVideoModal(i)});list.appendChild(row)});
+      components.forEach((c,i)=>{const row=document.createElement('div');row.className='innov-sidebar-item';row.innerHTML=`<span class="innov-s-num">${i+1}</span><div class="innov-s-info"><div class="innov-s-name">${c.nombre}</div><div class="innov-s-desc">${c.descripcion||''}</div></div>`;row.addEventListener('click',()=>{if(c.video)openMediaModal(c,i+1)});list.appendChild(row)});
     }
     function updateOverlayPositions(){
       if(!model||!overlayPos.length||!container)return;const w=container.clientWidth,h=container.clientHeight;
       const camDir=controls.target.clone().sub(camera.position).normalize();
-      overlayPos.forEach((wp,i)=>{let pos=wp;if(explodeAmount>0&&overlayMeshMap[i]>=0){const part=explodeParts[overlayMeshMap[i]];if(part){const origW=part.mesh.parent.localToWorld(part.originalPos.clone());const currW=part.mesh.parent.localToWorld(part.mesh.position.clone());pos=wp.clone().add(currW.sub(origW))}}
-      const p=pos.clone().project(camera);const toOv=pos.clone().sub(controls.target).normalize();const behind=p.z>1||camDir.dot(toOv)>0.15;const el=overlayEls[i];if(!el)return;el.style.left=((p.x*0.5+0.5)*w)+'px';el.style.top=((-p.y*0.5+0.5)*h)+'px';el.classList.toggle('behind',behind)});
+      overlayPos.forEach((wp,i)=>{const p=wp.clone().project(camera);const toOv=wp.clone().sub(controls.target).normalize();const behind=p.z>1||camDir.dot(toOv)>0.15;const el=overlayEls[i];if(!el)return;el.style.left=((p.x*0.5+0.5)*w)+'px';el.style.top=((-p.y*0.5+0.5)*h)+'px';el.classList.toggle('behind',behind)});
     }
 
-    function showDescPopup(item,x,y){const dp=$('#desc-popup');dp.querySelector('.dp-title').textContent=item.nombre;dp.querySelector('.dp-text').textContent=item.descripcion||'Sin descripción';dp.style.left=Math.min(x+10,window.innerWidth-270)+'px';dp.style.top=Math.min(y+10,window.innerHeight-100)+'px';dp.classList.add('show')}
-    function hideDescPopup(){$('#desc-popup').classList.remove('show')}
-    function openVideoModal(i){const c=components[i];if(!c||!c.video)return;$('#modal-num').textContent=i+1;$('#modal-title').textContent=c.nombre;$('#modal-desc').textContent=c.descripcion;const vid=$('#modal-video'),ld=$('#video-loading'),er=$('#video-error');ld.classList.remove('hidden');er.classList.remove('show');let url=c.video;if(!url.startsWith('http')&&cloudinaryBase)url=cloudinaryBase+url;vid.src=url;vid.oncanplay=()=>ld.classList.add('hidden');vid.onerror=()=>{ld.classList.add('hidden');er.classList.add('show')};vid.load();vid.play().catch(()=>{});$('#modal-overlay').classList.add('open')}
+    let _dpMediaItem=null;
+    function showDescPopup(item,x,y){
+      const dp=$('#desc-popup'),mbtn=$('#dp-media-btn');
+      dp.querySelector('.dp-title').textContent=item.nombre;
+      dp.querySelector('.dp-text').textContent=item.descripcion||'Sin descripción';
+      _dpMediaItem=item.video?item:null;
+      mbtn.classList.toggle('visible',!!item.video);
+      dp.style.left=Math.min(x+10,window.innerWidth-290)+'px';
+      dp.style.top=Math.min(y+10,window.innerHeight-120)+'px';
+      dp.classList.add('show');
+    }
+    function hideDescPopup(){$('#desc-popup').classList.remove('show');_dpMediaItem=null}
+    function openMediaModal(item,num){
+      if(!item||!item.video)return;
+      $('#modal-num').textContent=num||'';
+      $('#modal-title').textContent=item.nombre;
+      $('#modal-desc').textContent=item.descripcion;
+      const vid=$('#modal-video'),ld=$('#video-loading'),er=$('#video-error');
+      ld.classList.remove('hidden');er.classList.remove('show');
+      let url=item.video;if(!url.startsWith('http')&&cloudinaryBase)url=cloudinaryBase+url;
+      vid.src=url;vid.oncanplay=()=>ld.classList.add('hidden');
+      vid.onerror=()=>{ld.classList.add('hidden');er.classList.add('show')};
+      vid.load();vid.play().catch(()=>{});
+      $('#modal-overlay').classList.add('open');hideDescPopup();
+    }
     function closeVideoModal(){const v=$('#modal-video');$('#modal-overlay').classList.remove('open');v.pause();v.removeAttribute('src');v.load()}
 
     function renderGroupPanel(){
@@ -395,7 +368,6 @@
         usec.innerHTML='<div class="section-title">Sin Grupo</div>';
         ungrouped.forEach(m=>{const isC=components.includes(m);const row=document.createElement('div');row.className='gi-row';row.innerHTML=`<input type="checkbox" class="gi-check" ${m.visible?'checked':''}><span class="gi-dot ${isC?'comp':'lbl'}"></span><span class="gi-name">${m.nombre}</span>`;row.querySelector('.gi-check').addEventListener('change',e=>{m.visible=e.target.checked;rebuildOverlays()});usec.appendChild(row)});
       }
-      updateExplodeGroupSelect();
     }
 
     // ─── Gallery ───
@@ -442,9 +414,7 @@
     function backToGallery(){
       clearModel();
       components=[];labels=[];groups=[];
-      overlayEls=[];overlayPos=[];overlayItems=[];overlayMeshMap=[];
-      explodeAmount=0;explodeActive=false;explodeGroup='';
-      $('#explode-slider').value=0;$('#explode-pct').textContent='0%';
+      overlayEls=[];overlayPos=[];overlayItems=[];
       $('#hotspot-layer').innerHTML='';
       $('#viewer-screen').classList.add('hidden');
       $('#gallery-screen').classList.remove('hidden');
@@ -468,12 +438,10 @@
     $('#back-btn').addEventListener('click',backToGallery);
     $('#modal-close').addEventListener('click',closeVideoModal);
     $('#modal-overlay').addEventListener('click',e=>{if(e.target===$('#modal-overlay'))closeVideoModal()});
-    $('#explode-slider').addEventListener('input',e=>{explodeAmount=parseInt(e.target.value)/100;$('#explode-pct').textContent=e.target.value+'%';applyExplode();$('#explode-toggle').classList.toggle('active',explodeAmount>0)});
     $('#innov-toggle-btn').addEventListener('click',()=>$('#innov-panel').classList.toggle('collapsed'));
-    $('#explode-toggle').addEventListener('click',()=>{explodeActive=!explodeActive;animateExplodeTo(explodeActive?60:0)});
-    $('#explode-group-sel').addEventListener('change',e=>{explodeGroup=e.target.value;applyExplode()});
     document.addEventListener('click',e=>{if(!e.target.closest('#desc-popup')&&!e.target.closest('.hs-3d'))hideDescPopup()});
     $('#desc-popup').querySelector('.dp-close').addEventListener('click',hideDescPopup);
+    $('#dp-media-btn').addEventListener('click',()=>{if(_dpMediaItem)openMediaModal(_dpMediaItem,'●')});
     document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeVideoModal();hideDescPopup()}});
 
     // ─── Tabs ───
