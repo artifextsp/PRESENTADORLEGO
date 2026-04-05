@@ -211,9 +211,11 @@
       </div>
       <div class="sidebar-footer">
         <button class="btn btn-success btn-sm" id="save-btn">💾 Guardar</button>
+        <button class="btn btn-sm" id="import-btn">📥 Importar .json</button>
         <button class="btn btn-sm" id="export-btn">📤 Exportar</button>
         <button class="btn btn-publish btn-sm" id="publish-btn">🚀 Publicar</button>
         <button class="btn btn-sm" id="present-btn">🎬 Presentar</button>
+        <input type="file" id="import-file" accept=".json" style="display:none">
       </div>
     </aside>
 
@@ -428,6 +430,7 @@
     function saveProjects(p){localStorage.setItem(STORAGE_KEY,JSON.stringify(p))}
     function saveCurrentProject(){const name=$('#project-name').value.trim()||'Sin nombre';const projects=getProjects();const existing=projects.findIndex(p=>p.name===name);const proj={name,cloudinaryBase:$('#cloudinary-base').value,modelUrl:currentModelFile,components,labels,groups,savedAt:new Date().toISOString()};if(existing>=0)projects[existing]=proj;else projects.push(proj);saveProjects(projects);renderProjectsGrid();alert(`Proyecto "${name}" guardado`)}
     function exportProject(){const proj={version:3,name:$('#project-name').value,cloudinaryBase:$('#cloudinary-base').value,modelUrl:currentModelFile,components,labels,groups};const blob=new Blob([JSON.stringify(proj,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=(proj.name||'proyecto').replace(/\s+/g,'-').toLowerCase()+'.json';a.click()}
+    function importProject(file){const reader=new FileReader();reader.onload=e=>{try{const proj=JSON.parse(e.target.result);if(!proj.name&&!proj.components&&!proj.labels){alert('Archivo no válido');return}loadProjectData(proj);const projects=getProjects();const existing=projects.findIndex(p=>p.name===proj.name);if(existing>=0)projects[existing]={...proj,savedAt:new Date().toISOString()};else projects.push({...proj,savedAt:new Date().toISOString()});saveProjects(projects);renderProjectsGrid();switchTab('model');alert(`Proyecto "${proj.name}" importado correctamente`)}catch{alert('Error al leer el archivo JSON')}};reader.readAsText(file)}
     function loadProjectData(proj){$('#project-name').value=proj.name||'';$('#topbar-name').textContent=proj.name||'AURORA 3D';$('#cloudinary-base').value=proj.cloudinaryBase||'';components=proj.components||[];labels=proj.labels||[];groups=proj.groups||[];components.forEach(c=>{if(c.visible===undefined)c.visible=true});labels.forEach(l=>{if(l.visible===undefined)l.visible=true});rebuildOverlays()}
     function renderProjectsGrid(){const grid=$('#projects-grid'),empty=$('#projects-empty');const projects=getProjects();grid.innerHTML='';if(!projects.length){empty.style.display='';return}empty.style.display='none';projects.forEach((p,i)=>{const card=document.createElement('div');card.className='project-card';const d=p.savedAt?new Date(p.savedAt).toLocaleDateString('es',{day:'numeric',month:'short'}):'';const nc=(p.components?.length||0),nl=(p.labels?.length||0);card.innerHTML=`<div class="project-thumb">🤖</div><div class="project-card-info"><div class="project-card-name">${p.name}</div><div class="project-card-date">${d} · ${nc}C ${nl}E</div></div><div class="project-card-actions"><button class="btn btn-sm" style="flex:1;padding:.25rem" data-action="load">Abrir</button><button class="btn btn-danger btn-sm" style="padding:.25rem .5rem" data-action="del">✕</button></div>`;card.querySelector('[data-action="load"]').addEventListener('click',()=>{loadProjectData(p);switchTab('model')});card.querySelector('[data-action="del"]').addEventListener('click',e=>{e.stopPropagation();if(!confirm(`¿Eliminar "${p.name}"?`))return;const ps=getProjects();ps.splice(i,1);saveProjects(ps);renderProjectsGrid()});grid.appendChild(card)})}
 
@@ -555,7 +558,7 @@
     $('#ed-cancel').addEventListener('click',()=>{$('#edit-modal').classList.remove('open');placingMode=null;$('#placing-msg').classList.remove('visible');canvas.style.cursor=''});
     $('#grp-save').addEventListener('click',saveGroup);$('#grp-cancel').addEventListener('click',()=>$('#group-modal').classList.remove('open'));
     $('#modal-close').addEventListener('click',closeVideoModal);$('#modal-overlay').addEventListener('click',e=>{if(e.target===$('#modal-overlay'))closeVideoModal()});
-    $('#save-btn').addEventListener('click',saveCurrentProject);$('#export-btn').addEventListener('click',exportProject);
+    $('#save-btn').addEventListener('click',saveCurrentProject);$('#import-btn').addEventListener('click',()=>$('#import-file').click());$('#import-file').addEventListener('change',e=>{if(e.target.files[0])importProject(e.target.files[0]);e.target.value=''});$('#export-btn').addEventListener('click',exportProject);
     $('#publish-btn').addEventListener('click',openPublishModal);
     $('#pub-config-cancel').addEventListener('click',()=>$('#publish-modal').classList.remove('open'));
     $('#pub-config-next').addEventListener('click',()=>{const r=$('#pub-repo').value.trim(),t=$('#pub-token').value.trim();if(!r||!t){alert('Completa ambos campos');return}saveGHConfig({repo:r,token:t});$('#pub-name').value=$('#project-name').value;setPubStep('confirm')});
