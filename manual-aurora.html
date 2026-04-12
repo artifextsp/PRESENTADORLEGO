@@ -1,0 +1,1680 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manual Aurora 3D — Guía Completa del Equipo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+    :root{
+      --bg:#06080f;
+      --bg-card:#0e1322;
+      --bg-card2:#111827;
+      --bg-section:#0a0f1e;
+      --accent:#3b82f6;
+      --cyan:#06b6d4;
+      --purple:#a855f7;
+      --green:#22c55e;
+      --amber:#f59e0b;
+      --red:#ef4444;
+      --aurora1:#3b82f6;
+      --aurora2:#06b6d4;
+      --aurora3:#a855f7;
+      --text:#f1f5f9;
+      --text-dim:#94a3b8;
+      --text-muted:#64748b;
+      --border:rgba(255,255,255,.07);
+      --border-accent:rgba(59,130,246,.3);
+      --radius:14px;
+      --nav-w:280px;
+    }
+    html{scroll-behavior:smooth}
+    body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex}
+
+    /* ── SIDEBAR NAV ── */
+    #nav{
+      width:var(--nav-w);min-width:var(--nav-w);
+      background:var(--bg-card);
+      border-right:1px solid var(--border);
+      position:fixed;top:0;left:0;height:100vh;
+      overflow-y:auto;z-index:100;
+      display:flex;flex-direction:column;
+    }
+    #nav::-webkit-scrollbar{width:4px}
+    #nav::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:2px}
+    .nav-logo{
+      padding:1.5rem 1.2rem 1rem;
+      border-bottom:1px solid var(--border);
+      flex-shrink:0;
+    }
+    .nav-logo h1{
+      font-size:1.1rem;font-weight:900;letter-spacing:.04em;
+      background:linear-gradient(135deg,var(--aurora1),var(--aurora2),var(--aurora3));
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+    }
+    .nav-logo p{font-size:.68rem;color:var(--text-muted);margin-top:.2rem}
+    .nav-section-title{
+      padding:.8rem 1.2rem .3rem;
+      font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;
+      color:var(--text-muted);
+    }
+    .nav-item{
+      display:flex;align-items:center;gap:.6rem;
+      padding:.55rem 1.2rem;font-size:.8rem;font-weight:500;
+      color:var(--text-dim);text-decoration:none;
+      border-left:2px solid transparent;
+      transition:all .2s;cursor:pointer;
+    }
+    .nav-item:hover{background:rgba(255,255,255,.04);color:var(--text)}
+    .nav-item.active{
+      color:var(--accent);border-left-color:var(--accent);
+      background:rgba(59,130,246,.08);
+    }
+    .nav-item .nav-icon{font-size:.95rem;width:18px;text-align:center;flex-shrink:0}
+    .nav-badge{
+      margin-left:auto;font-size:.58rem;font-weight:700;
+      padding:.1rem .45rem;border-radius:50px;
+    }
+    .badge-blue{background:rgba(59,130,246,.2);color:var(--accent)}
+    .badge-cyan{background:rgba(6,182,212,.2);color:var(--cyan)}
+    .badge-purple{background:rgba(168,85,247,.2);color:var(--purple)}
+    .badge-green{background:rgba(34,197,94,.2);color:var(--green)}
+    .nav-divider{height:1px;background:var(--border);margin:.6rem 1.2rem}
+
+    /* ── MAIN CONTENT ── */
+    #main{margin-left:var(--nav-w);flex:1;min-height:100vh}
+
+    /* ── HERO ── */
+    .hero{
+      position:relative;padding:4rem 3rem 3rem;
+      overflow:hidden;
+      border-bottom:1px solid var(--border);
+    }
+    .hero-glow{
+      position:absolute;top:-80px;right:-80px;width:500px;height:500px;
+      background:radial-gradient(circle,rgba(59,130,246,.15) 0%,transparent 70%);
+      pointer-events:none;
+    }
+    .hero-glow2{
+      position:absolute;bottom:-100px;left:20%;width:400px;height:400px;
+      background:radial-gradient(circle,rgba(168,85,247,.1) 0%,transparent 70%);
+      pointer-events:none;
+    }
+    .hero-tag{
+      display:inline-flex;align-items:center;gap:.4rem;
+      font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;
+      color:var(--cyan);background:rgba(6,182,212,.1);
+      border:1px solid rgba(6,182,212,.2);border-radius:50px;
+      padding:.3rem .9rem;margin-bottom:1.2rem;
+    }
+    .hero h2{font-size:2.4rem;font-weight:900;line-height:1.15;margin-bottom:.8rem}
+    .hero h2 span{
+      background:linear-gradient(135deg,var(--aurora1),var(--aurora2),var(--aurora3));
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+    }
+    .hero p{font-size:1rem;color:var(--text-dim);max-width:600px;line-height:1.7}
+    .hero-chips{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1.5rem}
+    .chip{
+      display:flex;align-items:center;gap:.35rem;
+      font-size:.72rem;font-weight:600;
+      padding:.35rem .8rem;border-radius:50px;
+      border:1px solid var(--border);background:rgba(255,255,255,.04);
+      color:var(--text-dim);
+    }
+    .chip .dot{width:6px;height:6px;border-radius:50%}
+
+    /* ── SECTION BLOCK ── */
+    .content-section{padding:2.5rem 3rem;border-bottom:1px solid var(--border)}
+    .content-section:last-child{border-bottom:none}
+    .section-header{display:flex;align-items:flex-start;gap:1rem;margin-bottom:2rem}
+    .section-icon{
+      width:48px;height:48px;border-radius:14px;
+      display:flex;align-items:center;justify-content:center;
+      font-size:1.4rem;flex-shrink:0;
+    }
+    .icon-blue{background:rgba(59,130,246,.15);border:1px solid rgba(59,130,246,.25)}
+    .icon-cyan{background:rgba(6,182,212,.15);border:1px solid rgba(6,182,212,.25)}
+    .icon-purple{background:rgba(168,85,247,.15);border:1px solid rgba(168,85,247,.25)}
+    .icon-green{background:rgba(34,197,94,.15);border:1px solid rgba(34,197,94,.25)}
+    .section-title-block h3{font-size:1.5rem;font-weight:800;margin-bottom:.3rem}
+    .section-title-block p{font-size:.88rem;color:var(--text-dim);line-height:1.6}
+    .app-tag{
+      display:inline-block;font-size:.62rem;font-weight:700;text-transform:uppercase;
+      letter-spacing:.08em;padding:.2rem .6rem;border-radius:50px;margin-bottom:.4rem;
+    }
+    .tag-blue{background:rgba(59,130,246,.15);color:var(--accent);border:1px solid rgba(59,130,246,.2)}
+    .tag-cyan{background:rgba(6,182,212,.15);color:var(--cyan);border:1px solid rgba(6,182,212,.2)}
+    .tag-purple{background:rgba(168,85,247,.15);color:var(--purple);border:1px solid rgba(168,85,247,.2)}
+    .tag-green{background:rgba(34,197,94,.15);color:var(--green);border:1px solid rgba(34,197,94,.2)}
+
+    /* ── STEPS ── */
+    .steps{display:flex;flex-direction:column;gap:1rem;margin-top:1.5rem}
+    .step{
+      display:flex;gap:1rem;align-items:flex-start;
+      background:var(--bg-card2);border:1px solid var(--border);
+      border-radius:var(--radius);padding:1.1rem 1.2rem;
+      transition:border-color .2s;
+    }
+    .step:hover{border-color:rgba(255,255,255,.13)}
+    .step-num{
+      width:28px;height:28px;border-radius:50%;
+      display:flex;align-items:center;justify-content:center;
+      font-size:.75rem;font-weight:800;flex-shrink:0;margin-top:.05rem;
+    }
+    .num-blue{background:rgba(59,130,246,.2);color:var(--accent);border:1px solid rgba(59,130,246,.3)}
+    .num-cyan{background:rgba(6,182,212,.2);color:var(--cyan);border:1px solid rgba(6,182,212,.3)}
+    .num-purple{background:rgba(168,85,247,.2);color:var(--purple);border:1px solid rgba(168,85,247,.3)}
+    .num-green{background:rgba(34,197,94,.2);color:var(--green);border:1px solid rgba(34,197,94,.3)}
+    .step-body h4{font-size:.9rem;font-weight:700;margin-bottom:.3rem}
+    .step-body p{font-size:.82rem;color:var(--text-dim);line-height:1.65}
+    .step-body ul{font-size:.82rem;color:var(--text-dim);line-height:1.7;padding-left:1.1rem;margin-top:.4rem}
+    .step-body ul li{margin-bottom:.2rem}
+    .kbd{
+      display:inline-block;font-size:.7rem;font-weight:600;
+      padding:.1rem .4rem;border-radius:5px;
+      background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);
+      color:var(--text);font-family:monospace;margin:0 .1rem;
+    }
+    .step-note{
+      display:flex;align-items:flex-start;gap:.5rem;
+      margin-top:.6rem;padding:.5rem .7rem;border-radius:8px;
+      font-size:.77rem;line-height:1.55;
+    }
+    .note-tip{background:rgba(59,130,246,.08);color:#93c5fd;border-left:3px solid var(--accent)}
+    .note-warn{background:rgba(245,158,11,.08);color:#fcd34d;border-left:3px solid var(--amber)}
+    .note-info{background:rgba(6,182,212,.08);color:#67e8f9;border-left:3px solid var(--cyan)}
+    .note-success{background:rgba(34,197,94,.08);color:#86efac;border-left:3px solid var(--green)}
+
+    /* ── GRID CARDS ── */
+    .cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem;margin-top:1.5rem}
+    .card{
+      background:var(--bg-card2);border:1px solid var(--border);border-radius:var(--radius);
+      padding:1.2rem;transition:all .2s;
+    }
+    .card:hover{border-color:rgba(255,255,255,.13);transform:translateY(-2px)}
+    .card-icon{font-size:1.5rem;margin-bottom:.7rem}
+    .card h4{font-size:.88rem;font-weight:700;margin-bottom:.35rem}
+    .card p{font-size:.78rem;color:var(--text-dim);line-height:1.6}
+
+    /* ── SHORTCUT TABLE ── */
+    .shortcut-table{width:100%;border-collapse:collapse;margin-top:1.2rem;font-size:.8rem}
+    .shortcut-table th{
+      text-align:left;font-size:.65rem;font-weight:700;text-transform:uppercase;
+      letter-spacing:.08em;color:var(--text-muted);
+      padding:.6rem .8rem;border-bottom:1px solid var(--border);
+    }
+    .shortcut-table td{
+      padding:.7rem .8rem;border-bottom:1px solid rgba(255,255,255,.04);
+      vertical-align:middle;
+    }
+    .shortcut-table tr:last-child td{border-bottom:none}
+    .shortcut-table tr:hover td{background:rgba(255,255,255,.03)}
+    .shortcut-table td:first-child{color:var(--text-dim);font-size:.78rem}
+    .shortcut-table td:last-child{color:var(--text);font-weight:500}
+
+    /* ── ALERT BOXES ── */
+    .alert{
+      display:flex;gap:.8rem;align-items:flex-start;
+      padding:1rem 1.2rem;border-radius:var(--radius);margin:1.2rem 0;font-size:.83rem;line-height:1.65;
+    }
+    .alert-icon{font-size:1.1rem;flex-shrink:0;margin-top:.05rem}
+    .alert-tip{background:rgba(59,130,246,.07);border:1px solid rgba(59,130,246,.2);color:#bfdbfe}
+    .alert-warn{background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.2);color:#fde68a}
+    .alert-success{background:rgba(34,197,94,.07);border:1px solid rgba(34,197,94,.2);color:#bbf7d0}
+    .alert strong{font-weight:700}
+
+    /* ── FLOW ── */
+    .flow{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem;margin:1.2rem 0}
+    .flow-step{
+      display:flex;align-items:center;gap:.4rem;
+      background:var(--bg-card2);border:1px solid var(--border);
+      border-radius:8px;padding:.45rem .8rem;
+      font-size:.78rem;font-weight:600;color:var(--text-dim);
+    }
+    .flow-arrow{color:var(--text-muted);font-size:.9rem}
+
+    /* ── OVERVIEW BAND ── */
+    .overview-band{
+      display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1rem;
+      background:var(--bg-card2);border:1px solid var(--border);
+      border-radius:var(--radius);padding:1.5rem;margin-bottom:2rem;
+    }
+    .ov-item{display:flex;align-items:center;gap:.7rem}
+    .ov-icon{font-size:1.3rem;width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .ov-text h4{font-size:.82rem;font-weight:700;margin-bottom:.1rem}
+    .ov-text p{font-size:.72rem;color:var(--text-muted)}
+
+    /* ── BACK TO TOP ── */
+    #back-top{
+      position:fixed;bottom:1.5rem;right:1.5rem;
+      width:40px;height:40px;border-radius:50%;
+      background:linear-gradient(135deg,var(--aurora1),var(--aurora2));
+      border:none;color:#fff;font-size:1.1rem;cursor:pointer;
+      box-shadow:0 4px 20px rgba(59,130,246,.4);
+      display:flex;align-items:center;justify-content:center;
+      transition:transform .2s,opacity .2s;
+      opacity:0;pointer-events:none;z-index:200;
+    }
+    #back-top.visible{opacity:1;pointer-events:auto}
+    #back-top:hover{transform:translateY(-3px)}
+
+    /* ── RESPONSIVE ── */
+    @media(max-width:768px){
+      #nav{transform:translateX(-100%);transition:transform .3s}
+      #nav.open{transform:translateX(0)}
+      #main{margin-left:0}
+      .hero{padding:2rem 1.2rem 1.5rem}
+      .hero h2{font-size:1.6rem}
+      .content-section{padding:1.8rem 1.2rem}
+      .cards-grid{grid-template-columns:1fr}
+      #menu-btn{display:flex}
+    }
+    #menu-btn{
+      display:none;position:fixed;top:1rem;left:1rem;z-index:150;
+      width:40px;height:40px;border-radius:10px;
+      background:var(--bg-card);border:1px solid var(--border);
+      align-items:center;justify-content:center;font-size:1.1rem;cursor:pointer;color:var(--text);
+    }
+
+    /* ── SUBSECTION ── */
+    .subsection{margin-top:2rem}
+    .subsection-title{
+      font-size:.95rem;font-weight:800;margin-bottom:1rem;
+      display:flex;align-items:center;gap:.5rem;color:var(--text);
+    }
+    .subsection-title::after{
+      content:'';flex:1;height:1px;background:var(--border);
+    }
+
+    /* ── INTERFACE MAP ── */
+    .interface-map{
+      background:var(--bg-card2);border:1px solid var(--border);border-radius:var(--radius);
+      padding:1.5rem;margin:1.2rem 0;
+    }
+    .interface-map h4{font-size:.8rem;font-weight:700;color:var(--text-muted);margin-bottom:1rem;text-transform:uppercase;letter-spacing:.08em}
+    .zone-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:.7rem}
+    .zone{
+      padding:.7rem .9rem;border-radius:10px;font-size:.78rem;
+      border:1px solid;
+    }
+    .zone-blue{background:rgba(59,130,246,.07);border-color:rgba(59,130,246,.2);color:#93c5fd}
+    .zone-cyan{background:rgba(6,182,212,.07);border-color:rgba(6,182,212,.2);color:#67e8f9}
+    .zone-purple{background:rgba(168,85,247,.07);border-color:rgba(168,85,247,.2);color:#d8b4fe}
+    .zone-amber{background:rgba(245,158,11,.07);border-color:rgba(245,158,11,.2);color:#fcd34d}
+    .zone-green{background:rgba(34,197,94,.07);border-color:rgba(34,197,94,.2);color:#86efac}
+    .zone-red{background:rgba(239,68,68,.07);border-color:rgba(239,68,68,.2);color:#fca5a5}
+    .zone strong{display:block;font-weight:700;margin-bottom:.25rem;font-size:.77rem}
+    .zone span{font-size:.73rem;opacity:.8}
+
+    /* ── NUMBERED BADGE ── */
+    .num-badge{
+      display:inline-flex;align-items:center;justify-content:center;
+      width:20px;height:20px;border-radius:50%;font-size:.65rem;font-weight:800;
+      background:var(--accent);color:#fff;flex-shrink:0;margin-right:.35rem;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Mobile menu button -->
+<button id="menu-btn" onclick="document.getElementById('nav').classList.toggle('open')">☰</button>
+
+<!-- ── NAV ── -->
+<nav id="nav">
+  <div class="nav-logo">
+    <h1>✦ Manual Aurora 3D</h1>
+    <p>Guía completa del equipo · 2025</p>
+  </div>
+
+  <div class="nav-section-title">Inicio</div>
+  <a class="nav-item active" href="#inicio"><span class="nav-icon">🏠</span>Introducción</a>
+  <a class="nav-item" href="#flujo"><span class="nav-icon">🔄</span>Flujo de trabajo</a>
+
+  <div class="nav-divider"></div>
+  <div class="nav-section-title">Aurora 3D Editor</div>
+  <a class="nav-item" href="#editor-interfaz"><span class="nav-icon">🖥️</span>Interfaz <span class="nav-badge badge-blue">Editor</span></a>
+  <a class="nav-item" href="#editor-texto"><span class="nav-icon">✏️</span>Texto 3D</a>
+  <a class="nav-item" href="#editor-materiales"><span class="nav-icon">🎨</span>Materiales y estilos</a>
+  <a class="nav-item" href="#editor-animacion"><span class="nav-icon">🎬</span>Animaciones</a>
+  <a class="nav-item" href="#editor-exportar"><span class="nav-icon">📤</span>Exportar</a>
+
+  <div class="nav-divider"></div>
+  <div class="nav-section-title">Aurora 3D Viewer</div>
+  <a class="nav-item" href="#viewer-abrir"><span class="nav-icon">📂</span>Abrir archivos <span class="nav-badge badge-cyan">Viewer</span></a>
+  <a class="nav-item" href="#viewer-controles"><span class="nav-icon">🕹️</span>Controles de cámara</a>
+  <a class="nav-item" href="#viewer-presentar"><span class="nav-icon">📽️</span>Presentar</a>
+
+  <div class="nav-divider"></div>
+  <div class="nav-section-title">Aurora Nova</div>
+  <a class="nav-item" href="#nova-interfaz"><span class="nav-icon">🌟</span>Interfaz <span class="nav-badge badge-purple">Nova</span></a>
+  <a class="nav-item" href="#nova-slides"><span class="nav-icon">📄</span>Crear slides</a>
+  <a class="nav-item" href="#nova-media"><span class="nav-icon">🖼️</span>Media e integración 3D</a>
+  <a class="nav-item" href="#nova-transiciones"><span class="nav-icon">✨</span>Transiciones y efectos</a>
+  <a class="nav-item" href="#nova-exportar"><span class="nav-icon">💾</span>Exportar presentación</a>
+
+  <div class="nav-divider"></div>
+  <div class="nav-section-title">Aurora Nova Viewer</div>
+  <a class="nav-item" href="#novaviewer-abrir"><span class="nav-icon">▶️</span>Reproducir <span class="nav-badge badge-green">Nova V.</span></a>
+  <a class="nav-item" href="#novaviewer-controles"><span class="nav-icon">⌨️</span>Atajos de teclado</a>
+  <a class="nav-item" href="#novaviewer-modo"><span class="nav-icon">🎙️</span>Modo presentador</a>
+
+  <div class="nav-divider"></div>
+  <div class="nav-section-title">Referencia rápida</div>
+  <a class="nav-item" href="#shortcuts"><span class="nav-icon">⌨️</span>Atajos globales</a>
+  <a class="nav-item" href="#tips"><span class="nav-icon">💡</span>Consejos del equipo</a>
+  <a class="nav-item" href="#errores"><span class="nav-icon">🔧</span>Errores comunes</a>
+</nav>
+
+<!-- ── MAIN ── -->
+<main id="main">
+
+  <!-- HERO -->
+  <section class="hero" id="inicio">
+    <div class="hero-glow"></div>
+    <div class="hero-glow2"></div>
+    <div class="hero-tag">📖 Documentación Oficial del Equipo</div>
+    <h2>Manual de uso<br><span>Aurora 3D Suite</span></h2>
+    <p>Guía paso a paso para dominar Aurora 3D Editor, Aurora 3D Viewer, Aurora Nova y Aurora Nova Viewer. Todo lo que necesita el equipo en un solo lugar.</p>
+    <div class="hero-chips">
+      <div class="chip"><span class="dot" style="background:var(--accent)"></span>3D Editor</div>
+      <div class="chip"><span class="dot" style="background:var(--cyan)"></span>3D Viewer</div>
+      <div class="chip"><span class="dot" style="background:var(--purple)"></span>Nova</div>
+      <div class="chip"><span class="dot" style="background:var(--green)"></span>Nova Viewer</div>
+    </div>
+  </section>
+
+  <!-- FLUJO DE TRABAJO -->
+  <section class="content-section" id="flujo">
+    <div class="section-header">
+      <div class="section-icon icon-blue">🔄</div>
+      <div class="section-title-block">
+        <span class="app-tag tag-blue">Visión general</span>
+        <h3>Flujo de trabajo del equipo</h3>
+        <p>Entender qué herramienta se usa en cada etapa es clave para trabajar con eficiencia.</p>
+      </div>
+    </div>
+
+    <div class="overview-band">
+      <div class="ov-item">
+        <div class="ov-icon icon-blue">✏️</div>
+        <div class="ov-text"><h4>Aurora 3D Editor</h4><p>Crear y editar textos, logos y objetos 3D</p></div>
+      </div>
+      <div class="ov-item">
+        <div class="ov-icon icon-cyan">👁️</div>
+        <div class="ov-text"><h4>Aurora 3D Viewer</h4><p>Ver y revisar archivos .a3d en tiempo real</p></div>
+      </div>
+      <div class="ov-item">
+        <div class="ov-icon icon-purple">🌟</div>
+        <div class="ov-text"><h4>Aurora Nova</h4><p>Armar la presentación completa con slides</p></div>
+      </div>
+      <div class="ov-item">
+        <div class="ov-icon icon-green">▶️</div>
+        <div class="ov-text"><h4>Nova Viewer</h4><p>Presentar ante el público en pantalla completa</p></div>
+      </div>
+    </div>
+
+    <div class="flow">
+      <div class="flow-step">✏️ Diseñar en Editor</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">👁️ Revisar en Viewer</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">🌟 Ensamblar en Nova</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">▶️ Presentar con Nova Viewer</div>
+    </div>
+
+    <div class="alert alert-tip">
+      <span class="alert-icon">💡</span>
+      <div><strong>Consejo:</strong> Antes de cada presentación, siempre prueba el archivo completo con Nova Viewer en el equipo donde se va a proyectar para asegurarte de que todo se vea correctamente.</div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       AURORA 3D EDITOR
+  ════════════════════════════════════════════ -->
+  <section class="content-section" id="editor-interfaz">
+    <div class="section-header">
+      <div class="section-icon icon-blue">🖥️</div>
+      <div class="section-title-block">
+        <span class="app-tag tag-blue">Aurora 3D Editor</span>
+        <h3>Conociendo la interfaz</h3>
+        <p>Lo primero es familiarizarse con las zonas de la pantalla antes de comenzar a crear.</p>
+      </div>
+    </div>
+
+    <div class="interface-map">
+      <h4>Mapa de zonas de la interfaz</h4>
+      <div class="zone-grid">
+        <div class="zone zone-blue"><strong>🔝 Barra de menú</strong><span>File, Edit, View, Help — acceso a todas las funciones del programa</span></div>
+        <div class="zone zone-cyan"><strong>🔧 Barra de herramientas</strong><span>Iconos de acceso rápido: nuevo, abrir, guardar, deshacer, rehacer</span></div>
+        <div class="zone zone-purple"><strong>🎨 Panel izquierdo</strong><span>Estilos predefinidos, plantillas y librerías de materiales</span></div>
+        <div class="zone zone-amber"><strong>📐 Área de trabajo (centro)</strong><span>Vista 3D donde se edita y previsualiza el objeto en tiempo real</span></div>
+        <div class="zone zone-green"><strong>⚙️ Panel derecho</strong><span>Propiedades del objeto: texto, fuente, color, bisel, sombra, iluminación</span></div>
+        <div class="zone zone-red"><strong>⏱️ Línea de tiempo</strong><span>Control de animaciones: keyframes, duración y curvas de movimiento</span></div>
+      </div>
+    </div>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num num-blue">1</div>
+        <div class="step-body">
+          <h4>Abrir la aplicación</h4>
+          <p>Al abrir Aurora 3D Editor aparece la pantalla de bienvenida. Desde ahí puedes crear un nuevo proyecto o abrir uno guardado previamente (<kbd class="kbd">.a3d</kbd>).</p>
+          <div class="step-note note-tip">💡 Haz clic en <strong>"New"</strong> para empezar desde cero con un lienzo en blanco.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num num-blue">2</div>
+        <div class="step-body">
+          <h4>Navegar por el área de trabajo</h4>
+          <p>Usa el ratón para orbitar, hacer zoom y desplazarte en la vista 3D:</p>
+          <ul>
+            <li><kbd class="kbd">Clic derecho + arrastrar</kbd> → Rotar la cámara</li>
+            <li><kbd class="kbd">Rueda del ratón</kbd> → Zoom in / Zoom out</li>
+            <li><kbd class="kbd">Clic medio + arrastrar</kbd> → Panorámica (mover la vista)</li>
+          </ul>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num num-blue">3</div>
+        <div class="step-body">
+          <h4>Seleccionar objetos</h4>
+          <p>Haz clic sobre cualquier elemento en el área de trabajo para seleccionarlo. Aparecerán los manejadores de transformación (mover, rotar, escalar). Para seleccionar múltiples objetos, mantén <kbd class="kbd">Shift</kbd> y haz clic en cada uno.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TEXTO 3D -->
+  <section class="content-section" id="editor-texto">
+    <div class="section-header">
+      <div class="section-icon icon-blue">✏️</div>
+      <div class="section-title-block">
+        <span class="app-tag tag-blue">Aurora 3D Editor</span>
+        <h3>Crear y editar texto 3D</h3>
+        <p>El texto 3D es el elemento principal. Aprende a crearlo, configurarlo y darle personalidad.</p>
+      </div>
+    </div>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num num-blue">1</div>
+        <div class="step-body">
+          <h4>Insertar un nuevo texto</h4>
+          <p>Ve a <strong>Insert → Text</strong> en el menú superior, o haz doble clic en el área de trabajo. Se abrirá un campo de texto donde escribirás el contenido.</p>
+          <div class="step-note note-info">📌 Puedes escribir en español con tildes y ñ sin problema.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num num-blue">2</div>
+        <div class="step-body">
+          <h4>Cambiar la fuente tipográfica</h4>
+          <p>En el <strong>Panel derecho</strong>, sección <em>Font</em>:</p>
+          <ul>
+            <li>Haz clic en el nombre de la fuente para desplegar el selector</li>
+            <li>Elige el estilo: <em>Bold</em>, <em>Italic</em>, <em>Regular</em></li>
+            <li>Ajusta el tamaño con el control deslizante o escribiendo el valor</li>
+          </ul>
+          <div class="step-note note-tip">💡 Las fuentes instaladas en el sistema operativo son detectadas automáticamente.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num num-blue">3</div>
+        <div class="step-body">
+          <h4>Ajustar la profundidad (extrusión)</h4>
+          <p>En el panel derecho, busca el control <strong>Extrude / Depth</strong>. Desliza el valor para hacer el texto más plano o más profundo en el eje Z. Un valor entre 10 y 40 funciona bien para la mayoría de los casos.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num num-blue">4</div>
+        <div class="step-body">
+          <h4>Configurar el bisel (Bevel)</h4>
+          <p>El bisel redondea o afila los bordes del texto. Ve a la sección <strong>Bevel</strong> del panel y ajusta:</p>
+          <ul>
+            <li><em>Type</em>: Round (redondeado), Sharp (afilado), None (sin bisel)</li>
+            <li><em>Size</em>: tamaño del bisel</li>
+            <li><em>Steps</em>: suavidad del bisel (más pasos = más suave)</li>
+          </ul>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num num-blue">5</div>
+        <div class="step-body">
+          <h4>Posicionar y transformar el texto</h4>
+          <p>Usa las herramientas de transformación de la barra superior:</p>
+          <ul>
+            <li>🔀 <strong>Move</strong> → Mover el texto en X, Y, Z</li>
+            <li>🔁 <strong>Rotate</strong> → Rotar sobre cualquier eje</li>
+            <li>⤡ <strong>Scale</strong> → Escalar proporcionalmente o por eje</li>
+          </ul>
+          <div class="step-note note-warn">⚠️ Para escalar proporcionalmente, mantén presionado <kbd class="kbd">Shift</kbd> mientras arrastras.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MATERIALES Y ESTILOS -->
+  <section class="content-section" id="editor-materiales">
+    <div class="section-header">
+      <div class="section-icon icon-blue">🎨</div>
+      <div class="section-title-block">
+        <span class="app-tag tag-blue">Aurora 3D Editor</span>
+        <h3>Materiales, colores y estilos</h3>
+        <p>Dale vida a tus objetos con colores, degradados, texturas e iluminación.</p>
+      </div>
+    </div>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num num-blue">1</div>
+        <div class="step-body">
+          <h4>Aplicar un estilo predefinido</h4>
+          <p>En el <strong>Panel izquierdo</strong> encontrarás la librería de estilos. Haz clic en cualquier estilo para aplicarlo instantáneamente al objeto seleccionado. Es la forma más rápida de obtener resultados profesionales.</p>
+          <div class="step-note note-success">✅ Recomendado para principiantes. Los estilos ya tienen iluminación y materiales optimizados.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num num-blue">2</div>
+        <div class="step-body">
+          <h4>Personalizar el color del material</h4>
+          <p>Con el objeto seleccionado, ve a <strong>Material → Color</strong> en el panel derecho:</p>
+          <ul>
+            <li>Haz clic en el cuadro de color para abrir el selector</li>
+            <li>Elige entre <em>Solid</em> (color sólido) o <em>Gradient</em> (degradado)</li>
+            <li>Para degradado: define el color inicial y el color final</li>
+          </ul>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num num-blue">3</div>
+        <div class="step-body">
+          <h4>Agregar textura de imagen</h4>
+          <p>En la sección <strong>Texture</strong> del panel derecho, haz clic en <em>"Load Image"</em> y selecciona un archivo PNG o JPG de tu computadora. La textura se mapeará automáticamente sobre el objeto 3D.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num num-blue">4</div>
+        <div class="step-body">
+          <h4>Configurar reflexión y brillo</h4>
+          <ul>
+            <li><strong>Specular</strong>: controla el brillo tipo espejo del material</li>
+            <li><strong>Reflectivity</strong>: nivel de reflejo del entorno</li>
+            <li><strong>Opacity</strong>: transparencia del objeto (0 = invisible, 100 = sólido)</li>
+          </ul>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num num-blue">5</div>
+        <div class="step-body">
+          <h4>Ajustar el fondo de la escena</h4>
+          <p>Ve a <strong>Scene → Background</strong>. Puedes elegir:</p>
+          <ul>
+            <li><em>Color sólido</em> o <em>degradado</em> de fondo</li>
+            <li><em>Imagen de fondo</em>: útil para mockups o contextos de uso</li>
+            <li><em>Transparent</em>: fondo transparente para exportar con canal alfa</li>
+          </ul>
+          <div class="step-note note-tip">💡 Usa fondo transparente si vas a insertar el 3D en una presentación de Nova o en otro diseño.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num num-blue">6</div>
+        <div class="step-body">
+          <h4>Configurar la iluminación</h4>
+          <p>Ve a <strong>Light</strong> en el panel derecho. Puedes agregar hasta 3 fuentes de luz:</p>
+          <ul>
+            <li>Ajusta la posición de cada luz arrastrando los controles en la mini-esfera de previsualización</li>
+            <li>Cambia el color de la luz para efectos dramáticos</li>
+            <li>Sube o baja la intensidad con el deslizador</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ANIMACIONES -->
+  <section class="content-section" id="editor-animacion">
+    <div class="section-header">
+      <div class="section-icon icon-blue">🎬</div>
+      <div class="section-title-block">
+        <span class="app-tag tag-blue">Aurora 3D Editor</span>
+        <h3>Crear animaciones</h3>
+        <p>Anima textos y objetos con entrada, salida y efectos de movimiento continuos.</p>
+      </div>
+    </div>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num num-blue">1</div>
+        <div class="step-body">
+          <h4>Entender la línea de tiempo</h4>
+          <p>En la parte inferior está la <strong>Timeline</strong>. Cada objeto tiene su propia pista. Los rombos naranjas son <em>keyframes</em> (fotogramas clave) que marcan los puntos de inicio y fin de cada animación.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num num-blue">2</div>
+        <div class="step-body">
+          <h4>Aplicar una animación de entrada predefinida</h4>
+          <p>Selecciona el objeto y haz clic en la pestaña <strong>Animation</strong> del panel derecho. En la sección <em>In Effect</em> elige el tipo de entrada:</p>
+          <ul>
+            <li><em>Fade In</em>: aparece desde transparente</li>
+            <li><em>Fly In</em>: vuela desde un lado</li>
+            <li><em>Zoom In</em>: crece desde el centro</li>
+            <li><em>Rotate In</em>: gira al aparecer</li>
+          </ul>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num num-blue">3</div>
+        <div class="step-body">
+          <h4>Configurar tiempo de inicio y duración</h4>
+          <p>En la Timeline, arrastra el inicio de la barra de animación para definir <em>cuándo empieza</em>. Arrastra el extremo derecho de la barra para definir <em>cuánto dura</em>.</p>
+          <div class="step-note note-info">📌 El tiempo se muestra en segundos. La línea roja vertical es el cabezal de reproducción (posición actual).</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num num-blue">4</div>
+        <div class="step-body">
+          <h4>Crear un keyframe manual</h4>
+          <p>Para animar una propiedad manualmente:</p>
+          <ul>
+            <li>Mueve el cabezal al tiempo deseado</li>
+            <li>Cambia la propiedad (posición, rotación, color, etc.)</li>
+            <li>Haz clic en el botón con icono de rombo (◆) para agregar el keyframe</li>
+            <li>Repite en otro tiempo con un valor diferente</li>
+          </ul>
+          <div class="step-note note-warn">⚠️ Recuerda guardar un keyframe tanto en el inicio como en el final de cualquier cambio.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num num-blue">5</div>
+        <div class="step-body">
+          <h4>Agregar animación de salida</h4>
+          <p>En la sección <em>Out Effect</em> del panel de animación, elige cómo desaparece el elemento. Los efectos de salida son similares a los de entrada pero en reversa.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num num-blue">6</div>
+        <div class="step-body">
+          <h4>Previsualizar la animación</h4>
+          <p>Usa los controles de reproducción debajo de la Timeline:</p>
+          <ul>
+            <li>▶ <strong>Play</strong>: reproducir desde el cabezal</li>
+            <li>⏮ <strong>Rewind</strong>: ir al inicio</li>
+            <li>⏭ <strong>End</strong>: ir al final</li>
+            <li>🔁 <strong>Loop</strong>: reproducción en bucle</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="alert alert-warn">
+      <span class="alert-icon">⚠️</span>
+      <div><strong>Importante:</strong> Si tienes muchos objetos animados, el editor puede ir más lento durante la previsualización. Esto es normal — el archivo exportado siempre se ve a velocidad correcta.</div>
+    </div>
+  </section>
+
+  <!-- EXPORTAR EDITOR -->
+  <section class="content-section" id="editor-exportar">
+    <div class="section-header">
+      <div class="section-icon icon-blue">📤</div>
+      <div class="section-title-block">
+        <span class="app-tag tag-blue">Aurora 3D Editor</span>
+        <h3>Guardar y exportar</h3>
+        <p>Guarda tu proyecto y expórtalo en el formato que necesites.</p>
+      </div>
+    </div>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num num-blue">1</div>
+        <div class="step-body">
+          <h4>Guardar el proyecto editable</h4>
+          <p>Ve a <strong>File → Save</strong> o presiona <kbd class="kbd">Ctrl</kbd>+<kbd class="kbd">S</kbd>. El archivo se guarda en formato <kbd class="kbd">.a3d</kbd>. Guarda siempre antes de exportar.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num num-blue">2</div>
+        <div class="step-body">
+          <h4>Exportar como imagen estática</h4>
+          <p>Ve a <strong>File → Export → Image</strong>. Opciones disponibles:</p>
+          <ul>
+            <li><strong>PNG</strong>: recomendado, soporta fondo transparente</li>
+            <li><strong>JPG</strong>: para fotografías o cuando no se necesita transparencia</li>
+            <li>Define la resolución en píxeles (ej. 1920×1080 para Full HD)</li>
+          </ul>
+          <div class="step-note note-tip">💡 Para usar en Nova: exporta en PNG con fondo transparente y alta resolución.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num num-blue">3</div>
+        <div class="step-body">
+          <h4>Exportar como video animado</h4>
+          <p>Ve a <strong>File → Export → Video</strong>. Configura:</p>
+          <ul>
+            <li><strong>Formato</strong>: MP4 (H.264) es el más compatible</li>
+            <li><strong>Resolución</strong>: 1920×1080 (Full HD) o 3840×2160 (4K)</li>
+            <li><strong>FPS</strong>: 30 fps es suficiente para presentaciones</li>
+            <li><strong>Duración</strong>: se toma automáticamente de la Timeline</li>
+          </ul>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num num-blue">4</div>
+        <div class="step-body">
+          <h4>Exportar como secuencia de imágenes</h4>
+          <p>Ve a <strong>File → Export → Image Sequence</strong>. Genera un PNG por cada fotograma. Útil para composición avanzada en After Effects u otros programas.</p>
+          <div class="step-note note-warn">⚠️ Las secuencias de imágenes pueden ocupar mucho espacio en disco.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cards-grid">
+      <div class="card">
+        <div class="card-icon">📁</div>
+        <h4>Formato .a3d</h4>
+        <p>Proyecto editable. Guárdalo siempre. Es el único formato que permite volver a editar todo.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🖼️</div>
+        <h4>PNG / JPG</h4>
+        <p>Para insertar en Nova como imagen estática. PNG soporta transparencia.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🎬</div>
+        <h4>MP4 / AVI</h4>
+        <p>Para animaciones. Se puede insertar en Nova como video o proyectar directamente.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       AURORA 3D VIEWER
+  ════════════════════════════════════════════ -->
+  <section class="content-section" id="viewer-abrir">
+    <div class="section-header">
+      <div class="section-icon icon-cyan">📂</div>
+      <div class="section-title-block">
+        <span class="app-tag tag-cyan">Aurora 3D Viewer</span>
+        <h3>Abrir y gestionar archivos</h3>
+        <p>El Viewer permite ver cualquier archivo .a3d sin necesidad de tener el Editor instalado.</p>
+      </div>
+    </div>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num num-cyan">1</div>
+        <div class="step-body">
+          <h4>Abrir un archivo .a3d</h4>
+          <p>Existen tres formas de abrir un archivo:</p>
+          <ul>
+            <li>Arrastra el archivo <kbd class="kbd">.a3d</kbd> directo a la ventana del Viewer</li>
+            <li>Ve a <strong>File → Open</strong> y navega hasta el archivo</li>
+            <li>Doble clic en el archivo <kbd class="kbd">.a3d</kbd> desde el explorador de Windows/Mac (si el Viewer está configurado como aplicación por defecto)</li>
+          </ul>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num num-cyan">2</div>
+        <div class="step-body">
+          <h4>Explorar la lista de escenas</h4>
+          <p>Si el archivo tiene múltiples escenas, aparecerán en un panel lateral. Haz clic en cada escena para cargarla en la vista principal.</p>
+          <div class="step-note note-info">📌 Cada "escena" en el Viewer corresponde a un objeto o grupo de objetos guardado dentro del archivo .a3d.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num num-cyan">3</div>
+        <div class="step-body">
+          <h4>Historial de archivos recientes</h4>
+          <p>Ve a <strong>File → Recent Files</strong> para acceder rápidamente a los últimos archivos abiertos. Muy útil para revisiones rápidas durante el trabajo en equipo.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- VIEWER CONTROLES -->
+  <section class="content-section" id="viewer-controles">
+    <div class="section-header">
+      <div class="section-icon icon-cyan">🕹️</div>
+      <div class="section-title-block">
+        <span class="app-tag tag-cyan">Aurora 3D Viewer</span>
+        <h3>Controles de cámara y navegación</h3>
+        <p>Muévete libremente alrededor del modelo 3D para revisarlo desde cualquier ángulo.</p>
+      </div>
+    </div>
+
+    <table class="shortcut-table">
+      <thead>
+        <tr>
+          <th>Acción</th>
+          <th>Control de ratón</th>
+          <th>Teclado alternativo</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Rotar la vista (orbitar)</td>
+          <td><kbd class="kbd">Clic derecho + arrastrar</kbd></td>
+          <td><kbd class="kbd">↑ ↓ ← →</kbd></td>
+        </tr>
+        <tr>
+          <td>Zoom in / out</td>
+          <td><kbd class="kbd">Rueda del ratón</kbd></td>
+          <td><kbd class="kbd">+</kbd> / <kbd class="kbd">-</kbd></td>
+        </tr>
+        <tr>
+          <td>Panorámica (mover escena)</td>
+          <td><kbd class="kbd">Clic medio + arrastrar</kbd></td>
+          <td>—</td>
+        </tr>
+        <tr>
+          <td>Restablecer vista</td>
+          <td>—</td>
+          <td><kbd class="kbd">R</kbd> o <kbd class="kbd">Home</kbd></td>
+        </tr>
+        <tr>
+          <td>Vista frontal</td>
+          <td>—</td>
+          <td><kbd class="kbd">Numpad 1</kbd></td>
+        </tr>
+        <tr>
+          <td>Vista superior</td>
+          <td>—</td>
+          <td><kbd class="kbd">Numpad 7</kbd></td>
+        </tr>
+        <tr>
+          <td>Vista lateral</td>
+          <td>—</td>
+          <td><kbd class="kbd">Numpad 3</kbd></td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- VIEWER PRESENTAR -->
+  <section class="content-section" id="viewer-presentar">
+    <div class="section-header">
+      <div class="section-icon icon-cyan">📽️</div>
+      <div class="section-title-block">
+        <span class="app-tag tag-cyan">Aurora 3D Viewer</span>
+        <h3>Presentar y reproducir animaciones</h3>
+        <p>Reproduce las animaciones y comparte el resultado con el equipo o clientes.</p>
+      </div>
+    </div>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num num-cyan">1</div>
+        <div class="step-body">
+          <h4>Reproducir la animación</h4>
+          <p>Usa los controles de reproducción en la barra inferior: presiona <kbd class="kbd">Espacio</kbd> o el botón ▶ para iniciar. La animación se reproduce tal como fue diseñada en el Editor.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num num-cyan">2</div>
+        <div class="step-body">
+          <h4>Modo pantalla completa</h4>
+          <p>Presiona <kbd class="kbd">F11</kbd> o ve a <strong>View → Fullscreen</strong> para ver el modelo en pantalla completa. Ideal para revisiones antes de exportar a video o para presentar directamente.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num num-cyan">3</div>
+        <div class="step-body">
+          <h4>Captura de pantalla desde el Viewer</h4>
+          <p>Presiona <kbd class="kbd">F12</kbd> o ve a <strong>File → Screenshot</strong> para guardar una captura de la vista actual en PNG. Útil para generar vistas previas rápidas sin renderizar desde el Editor.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num num-cyan">4</div>
+        <div class="step-body">
+          <h4>Ajustar velocidad de reproducción</h4>
+          <p>Ve a <strong>Playback → Speed</strong>. Puedes reproducir a 0.5x (cámara lenta) o 2x (acelerado). Útil para revisar animaciones en detalle o presentar con más dramatismo.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="alert alert-success">
+      <span class="alert-icon">✅</span>
+      <div><strong>Tip:</strong> El Aurora 3D Viewer es gratuito. Puedes instalarlo en el equipo de la sala de presentación aunque no tengan el Editor. Solo necesitan el archivo <kbd class="kbd">.a3d</kbd>.</div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       AURORA NOVA
+  ════════════════════════════════════════════ -->
+  <section class="content-section" id="nova-interfaz">
+    <div class="section-header">
+      <div class="section-icon icon-purple">🌟</div>
+      <div class="section-title-block">
+        <span class="app-tag tag-purple">Aurora Nova</span>
+        <h3>Conociendo la interfaz de Nova</h3>
+        <p>Aurora Nova es el creador de presentaciones. Combina diapositivas, video, 3D y audio en un solo proyecto.</p>
+      </div>
+    </div>
+
+    <div class="interface-map">
+      <h4>Zonas de la interfaz de Aurora Nova</h4>
+      <div class="zone-grid">
+        <div class="zone zone-blue"><strong>📋 Panel de slides</strong><span>Lista de diapositivas en orden. Aquí reorganizas y duplicas slides</span></div>
+        <div class="zone zone-cyan"><strong>🎨 Área de diseño</strong><span>Lienzo principal donde arrastras y posicionas todos los elementos</span></div>
+        <div class="zone zone-purple"><strong>⚙️ Panel de propiedades</strong><span>Controla tamaño, posición, opacidad y animación del elemento seleccionado</span></div>
+        <div class="zone zone-amber"><strong>📚 Librería de medios</strong><span>Imágenes, videos, audio e íconos disponibles para usar</span></div>
+        <div class="zone zone-green"><strong>⏱️ Timeline de slide</strong><span>Controla cuándo aparece cada elemento dentro de la diapositiva</span></div>
+        <div class="zone zone-red"><strong>🔝 Barra de herramientas</strong><span>Insertar texto, formas, imágenes, video, 3D y otros elementos</span></div>
+      </div>
+    </div>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num num-purple">1</div>
+        <div class="step-body">
+          <h4>Crear un nuevo proyecto</h4>
+          <p>Al abrir Nova, selecciona <strong>New Project</strong>. Elige el tamaño del lienzo:</p>
+          <ul>
+            <li>16:9 (1920×1080) → Estándar para proyectores y pantallas modernas ✅</li>
+            <li>4:3 (1024×768) → Para pantallas antiguas</li>
+            <li>Personalizado → Define resolución exacta</li>
+          </ul>
+          <div class="step-note note-tip">💡 Siempre usa 1920×1080 a menos que sepas que el proyector tiene otra resolución.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num num-purple">2</div>
+        <div class="step-body">
+          <h4>Abrir un proyecto existente</h4>
+          <p>Ve a <strong>File → Open</strong> y selecciona el archivo <kbd class="kbd">.anova</kbd> (formato nativo de Aurora Nova). También puedes usar <strong>File → Recent Projects</strong> para acceder a trabajos recientes.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- NOVA SLIDES -->
+  <section class="content-section" id="nova-slides">
+    <div class="section-header">
+      <div class="section-icon icon-purple">📄</div>
+      <div class="section-title-block">
+        <span class="app-tag tag-purple">Aurora Nova</span>
+        <h3>Crear y organizar diapositivas</h3>
+        <p>Construye la estructura de tu presentación slide por slide.</p>
+      </div>
+    </div>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num num-purple">1</div>
+        <div class="step-body">
+          <h4>Agregar una nueva diapositiva</h4>
+          <p>Haz clic derecho en el <strong>Panel de slides</strong> y selecciona <em>"New Slide"</em>, o usa el botón <strong>+</strong> en la parte inferior del panel. También puedes ir a <strong>Insert → Slide</strong> en el menú.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num num-purple">2</div>
+        <div class="step-body">
+          <h4>Establecer el fondo del slide</h4>
+          <p>Con el slide seleccionado (sin tener ningún elemento activo), ve al panel de propiedades. Opciones de fondo:</p>
+          <ul>
+            <li><strong>Color sólido</strong>: elige un color desde el selector</li>
+            <li><strong>Degradado</strong>: define dos colores y dirección</li>
+            <li><strong>Imagen</strong>: importa una foto o diseño como fondo</li>
+            <li><strong>Video</strong>: usa un video de fondo en bucle</li>
+          </ul>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num num-purple">3</div>
+        <div class="step-body">
+          <h4>Agregar texto a la diapositiva</h4>
+          <p>Haz clic en <strong>Insert → Text</strong> (o el ícono T en la barra). Aparece un cuadro de texto que puedes posicionar arrastrando. En el panel de propiedades ajusta:</p>
+          <ul>
+            <li>Fuente, tamaño y estilo</li>
+            <li>Color y sombra del texto</li>
+            <li>Alineación: izquierda, centro, derecha</li>
+          </ul>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num num-purple">4</div>
+        <div class="step-body">
+          <h4>Duplicar y reordenar slides</h4>
+          <ul>
+            <li><strong>Duplicar:</strong> clic derecho en el slide → <em>"Duplicate"</em>. Mantiene todo el contenido</li>
+            <li><strong>Mover:</strong> arrastra el slide hacia arriba o abajo en la lista</li>
+            <li><strong>Eliminar:</strong> clic derecho → <em>"Delete Slide"</em> (¡no hay deshacer para esto!)</li>
+          </ul>
+          <div class="step-note note-warn">⚠️ Guarda antes de eliminar slides. No es posible recuperarlos con Ctrl+Z.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num num-purple">5</div>
+        <div class="step-body">
+          <h4>Definir la duración del slide</h4>
+          <p>En el panel de propiedades del slide (sin elemento seleccionado), ajusta <strong>Duration</strong> en segundos. Esta es la duración total de la diapositiva antes de pasar a la siguiente automáticamente.</p>
+          <div class="step-note note-info">📌 Si prefieres avanzar manualmente con un clic o tecla, puedes desactivar la duración automática en la configuración de la presentación.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- NOVA MEDIA -->
+  <section class="content-section" id="nova-media">
+    <div class="section-header">
+      <div class="section-icon icon-purple">🖼️</div>
+      <div class="section-title-block">
+        <span class="app-tag tag-purple">Aurora Nova</span>
+        <h3>Insertar media e integrar contenido 3D</h3>
+        <p>Enriquece tus slides con imágenes, videos, audio y objetos 3D creados en el Editor.</p>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">🖼️ Imágenes</div>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num num-purple">1</div>
+        <div class="step-body">
+          <h4>Insertar una imagen</h4>
+          <p>Ve a <strong>Insert → Image</strong> o arrastra el archivo directamente al lienzo. Formatos soportados: <kbd class="kbd">PNG</kbd>, <kbd class="kbd">JPG</kbd>, <kbd class="kbd">GIF</kbd>, <kbd class="kbd">SVG</kbd>.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num num-purple">2</div>
+        <div class="step-body">
+          <h4>Redimensionar y posicionar</h4>
+          <p>Arrastra las esquinas del elemento para redimensionar. Para mover, arrastra desde el centro. Mantén <kbd class="kbd">Shift</kbd> al redimensionar para mantener las proporciones.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">🎬 Videos</div>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num num-purple">3</div>
+        <div class="step-body">
+          <h4>Insertar un video</h4>
+          <p>Ve a <strong>Insert → Video</strong>. Selecciona el archivo <kbd class="kbd">MP4</kbd> o <kbd class="kbd">AVI</kbd>. El video aparece como un elemento en el lienzo. Puedes redimensionarlo como cualquier otro elemento.</p>
+          <ul>
+            <li><strong>Autoplay</strong>: el video inicia automáticamente al llegar al slide</li>
+            <li><strong>Loop</strong>: el video se repite indefinidamente</li>
+            <li><strong>Mute</strong>: silencia el audio del video</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">🔊 Audio</div>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num num-purple">4</div>
+        <div class="step-body">
+          <h4>Agregar música o narración</h4>
+          <p>Ve a <strong>Insert → Audio</strong>. Puedes agregar audio a nivel de slide (suena solo en ese slide) o a nivel de presentación (suena durante toda la presentación). Formatos soportados: <kbd class="kbd">MP3</kbd>, <kbd class="kbd">WAV</kbd>, <kbd class="kbd">OGG</kbd>.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">✨ Integrar objetos 3D del Editor</div>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num num-purple">5</div>
+        <div class="step-body">
+          <h4>Insertar un archivo .a3d directamente</h4>
+          <p>Ve a <strong>Insert → 3D Object</strong> y selecciona el archivo <kbd class="kbd">.a3d</kbd> exportado desde Aurora 3D Editor. El objeto 3D aparece en el lienzo con su animación y materiales intactos.</p>
+          <div class="step-note note-success">✅ Esta es la integración más poderosa: el 3D es interactivo y animado dentro de la presentación.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num num-purple">6</div>
+        <div class="step-body">
+          <h4>Controlar la animación del 3D en Nova</h4>
+          <p>Con el objeto 3D seleccionado, en el panel de propiedades puedes:</p>
+          <ul>
+            <li>Activar/desactivar <em>Autoplay</em> de la animación</li>
+            <li>Definir si la animación está en <em>Loop</em></li>
+            <li>Ajustar el inicio de la animación en la Timeline del slide</li>
+          </ul>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num num-purple">7</div>
+        <div class="step-body">
+          <h4>Alternativa: usar PNG/video del 3D</h4>
+          <p>Si el archivo .a3d es muy pesado, puedes insertar la versión exportada en PNG (imagen estática) o MP4 (video animado) como alternativa más ligera.</p>
+          <div class="step-note note-warn">⚠️ Un PNG/video no es interactivo. El archivo .a3d sí es interactivo pero pesa más.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- NOVA TRANSICIONES -->
+  <section class="content-section" id="nova-transiciones">
+    <div class="section-header">
+      <div class="section-icon icon-purple">✨</div>
+      <div class="section-title-block">
+        <span class="app-tag tag-purple">Aurora Nova</span>
+        <h3>Transiciones y efectos de animación</h3>
+        <p>Añade fluidez entre slides y anima los elementos dentro de cada diapositiva.</p>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">🔀 Transiciones entre slides</div>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num num-purple">1</div>
+        <div class="step-body">
+          <h4>Agregar transición entre diapositivas</h4>
+          <p>Selecciona un slide en el panel izquierdo. En el panel de propiedades, busca la sección <strong>Transition</strong>. Elige el tipo:</p>
+          <ul>
+            <li><em>Fade</em>: desvanecimiento suave ✅ (recomendado para presentaciones formales)</li>
+            <li><em>Slide</em>: deslizamiento horizontal o vertical</li>
+            <li><em>Zoom</em>: acercamiento/alejamiento</li>
+            <li><em>Flip</em>: volteo 3D de la diapositiva</li>
+            <li><em>None</em>: corte directo sin transición</li>
+          </ul>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num num-purple">2</div>
+        <div class="step-body">
+          <h4>Ajustar duración de la transición</h4>
+          <p>Debajo del selector de transición, ajusta el valor de <strong>Duration</strong> en segundos (recomendado: entre 0.5 y 1.5 segundos). Evita transiciones muy largas en presentaciones formales.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num num-purple">3</div>
+        <div class="step-body">
+          <h4>Aplicar la misma transición a todos los slides</h4>
+          <p>Configura la transición en un slide y luego haz clic en <strong>"Apply to All"</strong> para aplicarla de manera uniforme a toda la presentación.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">🎭 Animación de elementos dentro del slide</div>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num num-purple">4</div>
+        <div class="step-body">
+          <h4>Animar la entrada de un elemento</h4>
+          <p>Selecciona el elemento (texto, imagen, etc.). En el panel de propiedades, ve a <strong>Animation → In</strong> y elige el efecto de entrada. Ajusta el <em>delay</em> (retraso antes de aparecer) y la <em>duración</em> de la animación.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num num-purple">5</div>
+        <div class="step-body">
+          <h4>Controlar el orden de aparición con la Timeline</h4>
+          <p>En la Timeline del slide (parte inferior), cada elemento tiene su propia barra. Arrastra las barras para que los elementos aparezcan en el orden deseado. Esto es clave para narrar la historia del slide de forma progresiva.</p>
+          <div class="step-note note-tip">💡 Un buen principio: primero aparece el fondo/imagen, luego el título, luego los datos o puntos clave.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- NOVA EXPORTAR -->
+  <section class="content-section" id="nova-exportar">
+    <div class="section-header">
+      <div class="section-icon icon-purple">💾</div>
+      <div class="section-title-block">
+        <span class="app-tag tag-purple">Aurora Nova</span>
+        <h3>Guardar y exportar la presentación</h3>
+        <p>Guarda el proyecto y genera los archivos necesarios para compartir o presentar.</p>
+      </div>
+    </div>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num num-purple">1</div>
+        <div class="step-body">
+          <h4>Guardar el proyecto</h4>
+          <p>Usa <kbd class="kbd">Ctrl</kbd>+<kbd class="kbd">S</kbd> o <strong>File → Save</strong>. El archivo se guarda como <kbd class="kbd">.anova</kbd>. Crea una carpeta de proyecto ordenada con todos los medios en subcarpetas.</p>
+          <div class="step-note note-warn">⚠️ Si mueves los archivos de imagen/video/audio a otra carpeta, Nova no los encontrará. Mantén la estructura de carpetas intacta.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num num-purple">2</div>
+        <div class="step-body">
+          <h4>Exportar para Nova Viewer (presentación empaquetada)</h4>
+          <p>Ve a <strong>File → Export → Package</strong>. Esta opción crea un archivo o carpeta que incluye todos los medios y puede ser abierto por el Nova Viewer en cualquier computadora, sin necesitar tener Nova instalado.</p>
+          <div class="step-note note-success">✅ Esta es la opción ideal para llevar la presentación al lugar donde se va a presentar.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num num-purple">3</div>
+        <div class="step-body">
+          <h4>Exportar como video MP4</h4>
+          <p>Ve a <strong>File → Export → Video</strong>. La presentación completa se renderiza como un video MP4. Útil si quieres compartirla en redes sociales o enviarla por email sin que el destinatario necesite el Viewer.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num num-purple">4</div>
+        <div class="step-body">
+          <h4>Exportar como PDF (sin animaciones)</h4>
+          <p>Ve a <strong>File → Export → PDF</strong>. Genera un PDF con una captura de cada slide. Las animaciones y videos no se incluyen, pero es útil para documentación o impresión.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       AURORA NOVA VIEWER
+  ════════════════════════════════════════════ -->
+  <section class="content-section" id="novaviewer-abrir">
+    <div class="section-header">
+      <div class="section-icon icon-green">▶️</div>
+      <div class="section-title-block">
+        <span class="app-tag tag-green">Aurora Nova Viewer</span>
+        <h3>Abrir y reproducir presentaciones</h3>
+        <p>El Nova Viewer es la herramienta final: la que usa el presentador el día del evento.</p>
+      </div>
+    </div>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num num-green">1</div>
+        <div class="step-body">
+          <h4>Abrir el archivo de presentación</h4>
+          <p>Abre Nova Viewer. Ve a <strong>File → Open</strong> y selecciona el archivo <kbd class="kbd">.anova</kbd> o el paquete exportado. También puedes arrastrar el archivo directo a la ventana.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num num-green">2</div>
+        <div class="step-body">
+          <h4>Iniciar la presentación</h4>
+          <p>Haz clic en el botón <strong>"Present"</strong> (ícono de reproducción grande) o presiona <kbd class="kbd">F5</kbd>. La presentación se abrirá en pantalla completa, lista para comenzar.</p>
+          <div class="step-note note-tip">💡 Si tienes dos pantallas, el Viewer puede mostrar la presentación en la pantalla del proyector y las notas del presentador en la pantalla del presentador.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num num-green">3</div>
+        <div class="step-body">
+          <h4>Seleccionar pantalla de salida</h4>
+          <p>Antes de iniciar, ve a <strong>Settings → Display</strong> y selecciona en qué pantalla se proyectará la presentación (Monitor 1 o Monitor 2 / Proyector).</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="alert alert-warn">
+      <span class="alert-icon">⚠️</span>
+      <div><strong>Antes de la presentación:</strong> Conecta el proyector o pantalla externa ANTES de abrir el Nova Viewer. Si lo conectas después, reinicia el programa para que detecte la nueva pantalla.</div>
+    </div>
+  </section>
+
+  <!-- NOVA VIEWER CONTROLES -->
+  <section class="content-section" id="novaviewer-controles">
+    <div class="section-header">
+      <div class="section-icon icon-green">⌨️</div>
+      <div class="section-title-block">
+        <span class="app-tag tag-green">Aurora Nova Viewer</span>
+        <h3>Atajos de teclado durante la presentación</h3>
+        <p>Domina estos controles para navegar con fluidez durante la presentación.</p>
+      </div>
+    </div>
+
+    <table class="shortcut-table">
+      <thead>
+        <tr>
+          <th>Acción</th>
+          <th>Tecla principal</th>
+          <th>Alternativa</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Avanzar al siguiente slide</td>
+          <td><kbd class="kbd">→</kbd> o <kbd class="kbd">Espacio</kbd></td>
+          <td><kbd class="kbd">PageDown</kbd> o clic izquierdo</td>
+        </tr>
+        <tr>
+          <td>Retroceder al slide anterior</td>
+          <td><kbd class="kbd">←</kbd></td>
+          <td><kbd class="kbd">PageUp</kbd> o clic derecho</td>
+        </tr>
+        <tr>
+          <td>Ir al primer slide</td>
+          <td><kbd class="kbd">Home</kbd></td>
+          <td><kbd class="kbd">Ctrl</kbd>+<kbd class="kbd">Home</kbd></td>
+        </tr>
+        <tr>
+          <td>Ir al último slide</td>
+          <td><kbd class="kbd">End</kbd></td>
+          <td><kbd class="kbd">Ctrl</kbd>+<kbd class="kbd">End</kbd></td>
+        </tr>
+        <tr>
+          <td>Ir a un slide específico</td>
+          <td>Escribe el número + <kbd class="kbd">Enter</kbd></td>
+          <td>—</td>
+        </tr>
+        <tr>
+          <td>Pausar / reanudar animaciones</td>
+          <td><kbd class="kbd">P</kbd></td>
+          <td>—</td>
+        </tr>
+        <tr>
+          <td>Pantalla negra (pausa visual)</td>
+          <td><kbd class="kbd">B</kbd></td>
+          <td>—</td>
+        </tr>
+        <tr>
+          <td>Pantalla blanca</td>
+          <td><kbd class="kbd">W</kbd></td>
+          <td>—</td>
+        </tr>
+        <tr>
+          <td>Salir de pantalla completa</td>
+          <td><kbd class="kbd">Esc</kbd></td>
+          <td><kbd class="kbd">F5</kbd></td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- NOVA VIEWER MODO PRESENTADOR -->
+  <section class="content-section" id="novaviewer-modo">
+    <div class="section-header">
+      <div class="section-icon icon-green">🎙️</div>
+      <div class="section-title-block">
+        <span class="app-tag tag-green">Aurora Nova Viewer</span>
+        <h3>Modo presentador</h3>
+        <p>Vista especial para el presentador con notas, cronómetro y previsualización del siguiente slide.</p>
+      </div>
+    </div>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num num-green">1</div>
+        <div class="step-body">
+          <h4>Activar el modo presentador</h4>
+          <p>Ve a <strong>View → Presenter Mode</strong> antes de iniciar la presentación. Necesitas dos pantallas conectadas: una para el público (proyector) y otra para el presentador (laptop).</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num num-green">2</div>
+        <div class="step-body">
+          <h4>Elementos del modo presentador</h4>
+          <ul>
+            <li>🕐 <strong>Cronómetro</strong>: tiempo transcurrido desde que empezó la presentación</li>
+            <li>📄 <strong>Slide actual</strong>: miniatura de lo que ve el público</li>
+            <li>➡️ <strong>Siguiente slide</strong>: previsualización del próximo slide</li>
+            <li>📝 <strong>Notas</strong>: notas del presentador (las agregas en Nova al crear los slides)</li>
+          </ul>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num num-green">3</div>
+        <div class="step-body">
+          <h4>Agregar notas del presentador en Nova</h4>
+          <p>Vuelve a Aurora Nova. Con un slide seleccionado, busca la sección <strong>Notes</strong> debajo del lienzo. Escribe ahí los puntos clave que quieres recordar durante la presentación. El público nunca verá estas notas.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num num-green">4</div>
+        <div class="step-body">
+          <h4>Usar el apuntador láser virtual</h4>
+          <p>Durante la presentación en pantalla completa, mantén presionada <kbd class="kbd">Ctrl</kbd> y mueve el ratón. Aparecerá un punto rojo (puntero láser virtual) en la pantalla del proyector. Útil para señalar elementos específicos.</p>
+          <div class="step-note note-tip">💡 Puedes cambiar el color del puntero en <strong>Settings → Pointer Color</strong>.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="alert alert-success">
+      <span class="alert-icon">🎯</span>
+      <div><strong>Checklist pre-presentación:</strong> Conecta el proyector → Abre Nova Viewer → Selecciona la pantalla correcta → Activa Presenter Mode → Abre el archivo → Presiona F5 → ¡Listo para presentar!</div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       SHORTCUTS GLOBALES
+  ════════════════════════════════════════════ -->
+  <section class="content-section" id="shortcuts">
+    <div class="section-header">
+      <div class="section-icon" style="background:rgba(255,255,255,.06);border:1px solid var(--border)">⌨️</div>
+      <div class="section-title-block">
+        <h3>Atajos de teclado globales</h3>
+        <p>Referencia rápida de los atajos más usados en todas las aplicaciones de Aurora.</p>
+      </div>
+    </div>
+
+    <div class="cards-grid">
+      <div class="card">
+        <div class="card-icon">💾</div>
+        <h4>Guardar</h4>
+        <p><kbd class="kbd">Ctrl</kbd>+<kbd class="kbd">S</kbd> — Funciona en Editor y Nova</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">↩️</div>
+        <h4>Deshacer</h4>
+        <p><kbd class="kbd">Ctrl</kbd>+<kbd class="kbd">Z</kbd> — Deshace la última acción</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">↪️</div>
+        <h4>Rehacer</h4>
+        <p><kbd class="kbd">Ctrl</kbd>+<kbd class="kbd">Y</kbd> — Rehace lo deshecho</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">📋</div>
+        <h4>Copiar / Pegar</h4>
+        <p><kbd class="kbd">Ctrl</kbd>+<kbd class="kbd">C</kbd> / <kbd class="kbd">Ctrl</kbd>+<kbd class="kbd">V</kbd></p>
+      </div>
+      <div class="card">
+        <div class="card-icon">✂️</div>
+        <h4>Duplicar</h4>
+        <p><kbd class="kbd">Ctrl</kbd>+<kbd class="kbd">D</kbd> — Copia y pega en un solo paso</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🗑️</div>
+        <h4>Eliminar</h4>
+        <p><kbd class="kbd">Delete</kbd> o <kbd class="kbd">Backspace</kbd></p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🔍</div>
+        <h4>Seleccionar todo</h4>
+        <p><kbd class="kbd">Ctrl</kbd>+<kbd class="kbd">A</kbd></p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🖨️</div>
+        <h4>Abrir archivo</h4>
+        <p><kbd class="kbd">Ctrl</kbd>+<kbd class="kbd">O</kbd></p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🆕</div>
+        <h4>Nuevo proyecto</h4>
+        <p><kbd class="kbd">Ctrl</kbd>+<kbd class="kbd">N</kbd></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       TIPS DEL EQUIPO
+  ════════════════════════════════════════════ -->
+  <section class="content-section" id="tips">
+    <div class="section-header">
+      <div class="section-icon" style="background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.25)">💡</div>
+      <div class="section-title-block">
+        <h3>Consejos del equipo</h3>
+        <p>Lecciones aprendidas que hacen el trabajo más eficiente y evitan problemas comunes.</p>
+      </div>
+    </div>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num" style="background:rgba(245,158,11,.2);color:var(--amber);border:1px solid rgba(245,158,11,.3)">💡</div>
+        <div class="step-body">
+          <h4>Estructura de carpetas del proyecto</h4>
+          <p>Siempre crea una carpeta principal por proyecto con esta estructura:</p>
+          <ul>
+            <li>📁 <strong>Proyecto_Aurora/</strong>
+              <ul style="margin-top:.3rem">
+                <li>📁 <strong>editor/</strong> → archivos .a3d</li>
+                <li>📁 <strong>exports/</strong> → PNG, MP4 exportados del Editor</li>
+                <li>📁 <strong>nova/</strong> → archivo .anova y medias de Nova</li>
+                <li>📁 <strong>assets/</strong> → fuentes, imágenes, logos del proyecto</li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num" style="background:rgba(245,158,11,.2);color:var(--amber);border:1px solid rgba(245,158,11,.3)">💡</div>
+        <div class="step-body">
+          <h4>Guardar con frecuencia y con versiones</h4>
+          <p>Usa nombres con versión: <kbd class="kbd">logotipo_v1.a3d</kbd>, <kbd class="kbd">logotipo_v2.a3d</kbd>. Nunca sobreescribas el archivo anterior hasta estar seguro del resultado. El historial de deshacer se pierde al cerrar el programa.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num" style="background:rgba(245,158,11,.2);color:var(--amber);border:1px solid rgba(245,158,11,.3)">💡</div>
+        <div class="step-body">
+          <h4>Resolución estándar del equipo</h4>
+          <p>Usa siempre <strong>1920×1080 (Full HD)</strong> tanto en el Editor como en Nova. Si el render se ve pixelado en pantalla grande, asegúrate de que el tamaño de exportación no sea menor que la resolución del proyector.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num" style="background:rgba(245,158,11,.2);color:var(--amber);border:1px solid rgba(245,158,11,.3)">💡</div>
+        <div class="step-body">
+          <h4>Prueba en el equipo de presentación</h4>
+          <p>Siempre prueba el archivo <strong>en la computadora donde se presentará</strong>, no solo en la tuya. Las diferencias de hardware, resolución y versión del software pueden generar sorpresas.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num" style="background:rgba(245,158,11,.2);color:var(--amber);border:1px solid rgba(245,158,11,.3)">💡</div>
+        <div class="step-body">
+          <h4>Paleta de colores consistente</h4>
+          <p>Define una paleta de colores del equipo y úsala en todos los proyectos. Esto hace que la presentación luzca profesional y coherente. Anota los códigos HEX de los colores aprobados y tenlos a mano.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       ERRORES COMUNES
+  ════════════════════════════════════════════ -->
+  <section class="content-section" id="errores">
+    <div class="section-header">
+      <div class="section-icon" style="background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2)">🔧</div>
+      <div class="section-title-block">
+        <h3>Errores comunes y cómo resolverlos</h3>
+        <p>Problemas frecuentes que el equipo ha encontrado, con su solución.</p>
+      </div>
+    </div>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num" style="background:rgba(239,68,68,.15);color:#fca5a5;border:1px solid rgba(239,68,68,.3)">!</div>
+        <div class="step-body">
+          <h4>Nova no encuentra los medios (imágenes/videos aparecen rojos o en blanco)</h4>
+          <p><strong>Causa:</strong> Los archivos de media fueron movidos o la carpeta cambió de ubicación.<br><strong>Solución:</strong> Ve a <strong>Edit → Fix Missing Media</strong> y revincula cada archivo. En el futuro, no muevas los archivos de la carpeta del proyecto.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num" style="background:rgba(239,68,68,.15);color:#fca5a5;border:1px solid rgba(239,68,68,.3)">!</div>
+        <div class="step-body">
+          <h4>El texto 3D se ve distorsionado o pixelado en la presentación</h4>
+          <p><strong>Causa:</strong> Se exportó a baja resolución o el PNG fue redimensionado hacia arriba en Nova.<br><strong>Solución:</strong> Re-exporta desde el Editor con una resolución mayor (2K o 4K) y reemplaza el archivo en Nova.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num" style="background:rgba(239,68,68,.15);color:#fca5a5;border:1px solid rgba(239,68,68,.3)">!</div>
+        <div class="step-body">
+          <h4>La presentación se ve lenta o con saltos durante la reproducción</h4>
+          <p><strong>Causa:</strong> Demasiados objetos 3D pesados o videos en alta resolución.<br><strong>Solución:</strong> Reduce la resolución de los videos, convierte los .a3d muy pesados a MP4, y cierra todas las aplicaciones innecesarias antes de presentar.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num" style="background:rgba(239,68,68,.15);color:#fca5a5;border:1px solid rgba(239,68,68,.3)">!</div>
+        <div class="step-body">
+          <h4>El Viewer no muestra la presentación en la pantalla correcta</h4>
+          <p><strong>Causa:</strong> El proyector fue conectado después de abrir el programa.<br><strong>Solución:</strong> Cierra Nova Viewer, asegúrate de que el proyector esté conectado y detectado por el sistema operativo, y vuelve a abrir el Viewer.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num" style="background:rgba(239,68,68,.15);color:#fca5a5;border:1px solid rgba(239,68,68,.3)">!</div>
+        <div class="step-body">
+          <h4>El programa se cierra inesperadamente al renderizar/exportar</h4>
+          <p><strong>Causa:</strong> Falta de memoria RAM o la escena es demasiado compleja.<br><strong>Solución:</strong> Cierra otros programas, reinicia el equipo y exporta antes de abrir Nova. Si persiste, reduce la calidad de renderizado o la resolución de exportación.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num" style="background:rgba(239,68,68,.15);color:#fca5a5;border:1px solid rgba(239,68,68,.3)">!</div>
+        <div class="step-body">
+          <h4>Las fuentes del texto 3D cambian al abrir en otro computador</h4>
+          <p><strong>Causa:</strong> La fuente usada no está instalada en el otro equipo.<br><strong>Solución:</strong> Instala la misma fuente en todos los equipos del equipo, o exporta el texto 3D como imagen/video antes de compartir.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="alert alert-tip">
+      <span class="alert-icon">📞</span>
+      <div><strong>¿Tienes un problema que no está aquí?</strong> Documéntalo con una captura de pantalla, el nombre del archivo y los pasos para reproducirlo, y agrégalo a este manual para ayudar al resto del equipo.</div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer style="padding:2rem 3rem;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem">
+    <div>
+      <div style="font-weight:800;font-size:.9rem;background:linear-gradient(135deg,var(--aurora1),var(--aurora2),var(--aurora3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">✦ Manual Aurora 3D Suite</div>
+      <div style="font-size:.72rem;color:var(--text-muted);margin-top:.2rem">Guía del equipo · Actualizado 2025</div>
+    </div>
+    <div style="font-size:.75rem;color:var(--text-muted)">3D Editor · 3D Viewer · Nova · Nova Viewer</div>
+  </footer>
+
+</main>
+
+<!-- Back to top -->
+<button id="back-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+  // Active nav highlighting
+  const sections = document.querySelectorAll('[id]');
+  const navItems = document.querySelectorAll('.nav-item');
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        navItems.forEach(item => {
+          item.classList.toggle('active', item.getAttribute('href') === '#' + entry.target.id);
+        });
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+
+  sections.forEach(s => observer.observe(s));
+
+  // Back to top button
+  const backBtn = document.getElementById('back-top');
+  document.getElementById('main').addEventListener('scroll', () => {
+    backBtn.classList.toggle('visible', document.getElementById('main').scrollTop > 400);
+  });
+  window.addEventListener('scroll', () => {
+    backBtn.classList.toggle('visible', window.scrollY > 400);
+  });
+
+  // Close mobile nav on link click
+  navItems.forEach(item => {
+    item.addEventListener('click', () => {
+      document.getElementById('nav').classList.remove('open');
+    });
+  });
+
+  // Smooth scroll offset fix
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function(e) {
+      e.preventDefault();
+      const target = document.querySelector(this.getAttribute('href'));
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  });
+</script>
+</body>
+</html>
